@@ -5,6 +5,7 @@ using Eto.Drawing;
 //main file for program
 namespace CrossCorrupt.Desktop
 {
+    //very nice
     class Program
     {
         [STAThread]
