@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossCorrupt", "CrossCorrupt\CrossCorrupt\CrossCorrupt.csproj", "{E5A4AA45-3162-4309-9A63-BA63D943D54A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossCorrupt.Desktop", "CrossCorrupt\CrossCorrupt.Desktop\CrossCorrupt.Desktop.csproj", "{809F0D9F-3455-46D0-8728-3877EB884CF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5A4AA45-3162-4309-9A63-BA63D943D54A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5A4AA45-3162-4309-9A63-BA63D943D54A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5A4AA45-3162-4309-9A63-BA63D943D54A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5A4AA45-3162-4309-9A63-BA63D943D54A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{809F0D9F-3455-46D0-8728-3877EB884CF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{809F0D9F-3455-46D0-8728-3877EB884CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{809F0D9F-3455-46D0-8728-3877EB884CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{809F0D9F-3455-46D0-8728-3877EB884CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFED7BCC-3A9B-4094-9CC6-95BE64714873}
+	EndGlobalSection
+EndGlobal
