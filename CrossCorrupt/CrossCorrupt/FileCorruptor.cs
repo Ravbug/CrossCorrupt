@@ -22,6 +22,17 @@ namespace CrossCorrupt
         }
 
         /// <summary>
+        /// Updates the file and output path so the object is reusable
+        /// </summary>
+        /// <param name="newIn">New file path to corrupt</param>
+        /// <param name="newOut">New output destination</param>
+        public void updateFiles(string newIn, string newOut)
+        {
+            inFile = newIn;
+            outFile = newOut;
+        }
+
+        /// <summary>
         /// Corrupts a file by changing every nth byte to a specified byte, and writes the resulting file to the outFile directory
         /// </summary>
         /// <param name="replacement">replacement byte</param>

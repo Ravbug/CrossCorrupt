@@ -11,6 +11,9 @@ namespace CrossCorrupt
         public MainForm()
         {
             XamlReader.Load(this);
+
+            CorruptManager c = new CorruptManager("C:\\Users\\Main\\Downloads", "C:\\Users\\Main\\Documents");
+
             FileCorruptor fc = new FileCorruptor("C:\\Users\\Main\\Desktop\\test.txt", "C:\\Users\\Main\\Desktop\\test1.txt");
             fc.DeleteCorrupt(5);
         }
