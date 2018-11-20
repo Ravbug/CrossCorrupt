@@ -37,7 +37,7 @@ namespace CrossCorrupt
         /// </summary>
         protected void SetInput(object sender, EventArgs e)
         {
-            
+            fc.SetInFile(((TextBox)sender).Text);
         }
 
         /// <summary>
@@ -45,19 +45,18 @@ namespace CrossCorrupt
         /// </summary>
         protected void SetOutput(object sender, EventArgs e)
         {
-            
+            fc.SetOutFile(((TextBox)sender).Text);
         }
 
         protected void RunCorrupt(object sender, EventArgs e)
         {
-            if (fc.GetInfIle().Trim().Length > 0
-                && fc.GetOutFile().Trim().Length > 0)
+            if (fc.GetInFile().Trim().Length > 0)
             {
                 fc.DeleteCorrupt(5);
             }
             else
             {
-                MessageBox.Show("Please enter an input and output file.");
+                MessageBox.Show("Please enter an input file.");
             }
             
         }
