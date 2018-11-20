@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net461</TargetFramework>
+    <ApplicationManifest>CrossCorrupt.manifest</ApplicationManifest>
   </PropertyGroup>
 	
   <ItemGroup>

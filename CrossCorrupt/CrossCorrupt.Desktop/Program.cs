@@ -5,11 +5,11 @@ using Eto.Drawing;
 //main file for program
 namespace CrossCorrupt.Desktop
 {
-    //very nice
-    class Program
+    //very nice 1
+    public partial class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             new Application(Eto.Platform.Detect).Run(new MainForm());
         }
