@@ -26,17 +26,16 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="replacement">replacement byte</param>
         /// <param name="n">the nth byte to change</param>
-        public void replaceCorrupt(byte replacement,int n)
+        public void ReplaceCorrupt(byte replacement,int n)
         {
             //get the length of the file -- this will throw if the target file does not exist
             FileInfo fi = new FileInfo(inFile);
-            long stop = fi.Length;
 
             byte[] output = new byte[fi.Length];
 
             //read the file one byte at a time (reading it all at once is bad)
             FileStream fileStream = File.OpenRead(inFile);            
-            for (int i = 0; i < stop; i++)
+            for (int i = 0; i < output.Length; i++)
             {
                 //if this is the nth byte, set the replacement byte
                 if (i % n == 0)
@@ -53,6 +52,73 @@ namespace CrossCorrupt
 
             //write out the file
             File.WriteAllBytes(outFile,output);
+        }
+
+        /// <summary>
+        /// Corrupts the file by inserting extra bytes every n bytes, and writes the resulting file to the outFile directory
+        /// </summary>
+        /// <param name="insertion">byet to insert</param>
+        /// <param name="n">the nth byte to insert after</param>
+        public void InsertCorrupt(byte insertion, int n)
+        {
+            //get the length of the file -- this will throw if the target file does not exist
+            FileInfo fi = new FileInfo(inFile);
+
+            byte[] output = new byte[fi.Length + fi.Length/n];
+
+            //read the file one byte at a time (reading it all at once is bad)
+            FileStream fileStream = File.OpenRead(inFile);
+            for (int i = 0; i < output.Length; i++)
+            {
+                //if this is the nth byte, set the replacement byte
+                if (i % n == 0)
+                {   
+                    //add the byte and the extra byte
+                    output[i] = (byte)fileStream.ReadByte();
+                    output[i + 1] = insertion;
+                    i++;
+                }
+                else
+                {
+                    //add the byte from the file
+                    output[i] = (byte)fileStream.ReadByte();
+                }
+            }
+
+            //write out the file
+            File.WriteAllBytes(outFile, output);
+        }
+
+        /// <summary>
+        /// Corrupts the file by deleting every nth byte, and writes the resulting file to the outFile directory
+        /// </summary>
+        /// <param name="n">the nth byte to delete</param>
+        public void DeleteCorrupt(int n)
+        {
+            //get the length of the file -- this will throw if the target file does not exist
+            FileInfo fi = new FileInfo(inFile);
+
+            List<byte> output = new List<byte>();
+
+            //read the file one byte at a time (reading it all at once is bad)
+            FileStream fileStream = File.OpenRead(inFile);
+            for (int i = 0; i < fi.Length-fi.Length/n; i++)
+            {
+                //if this is the nth byte, set the replacement byte
+                if (i % n == 0)
+                {
+                    //skip the byte
+                    fileStream.ReadByte();
+                }
+                else
+                {
+                    //add the byte from the file
+                    output.Add((byte)fileStream.ReadByte());
+                }
+            }
+
+            //write out the file
+            File.WriteAllBytes(outFile, output.ToArray());
         }
     }
 }

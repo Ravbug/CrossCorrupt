@@ -11,6 +11,8 @@ namespace CrossCorrupt
         public MainForm()
         {
             XamlReader.Load(this);
+            FileCorruptor fc = new FileCorruptor("C:\\Users\\Main\\Desktop\\test.txt", "C:\\Users\\Main\\Desktop\\test1.txt");
+            fc.DeleteCorrupt(5);
         }
 
         protected void HandleClickMe(object sender, EventArgs e)
