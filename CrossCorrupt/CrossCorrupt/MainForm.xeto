@@ -2,12 +2,14 @@
 <Form
 	xmlns="http://schema.picoe.ca/eto.forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	Title="My Eto Form"
+	Title="CrossCorrupt"
 	ClientSize="400, 350"
 	Padding="10"
 	>
 	<StackLayout>
-		<Label>Some Content</Label>
+		<TextBox Text="Enter Input File" TextChanged="SetInput" />
+    <TextBox Text="Enter Output File" TextChanged="SetOutput" />
+    <Button Text="Run Corrupt" Click="RunCorrupt"/>
 	</StackLayout>
 
 	<Form.Menu>

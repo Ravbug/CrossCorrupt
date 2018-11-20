@@ -15,6 +15,16 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="fIn">Fully-qualified path to the file</param>
         /// <param name="fOut">Fully-quallified path to the destination file</param>
+        public FileCorruptor()
+        {
+            
+        }
+
+        /// <summary>
+        /// Constructor for a FileCorruptor object
+        /// </summary>
+        /// <param name="fIn">Fully-qualified path to the file</param>
+        /// <param name="fOut">Fully-quallified path to the destination file</param>
         public FileCorruptor(string fIn, string fOut)
         {
             inFile = fIn;
@@ -119,6 +129,34 @@ namespace CrossCorrupt
 
             //write out the file
             File.WriteAllBytes(outFile, output.ToArray());
+        }
+
+        /// <summary>
+        /// Sets the new input file for corruption
+        /// </summary>
+        /// <param name="newIn">The path of new file to be used</param>
+        public void SetInFile(string newIn)
+        {
+            inFile = newIn;
+        }
+
+        /// <summary>
+        /// Sets the new output file for corruption
+        /// </summary>
+        /// <param name="newIn">The path of new file to be used</param>
+        public void SetOutFile(string newOut)
+        {
+            outFile = newOut;
+        }
+
+        public string GetInfIle()
+        {
+            return inFile.ToString();
+        }
+
+        public string GetOutFile()
+        {
+            return outFile.ToString();
         }
     }
 }
