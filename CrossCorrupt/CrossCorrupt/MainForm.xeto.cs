@@ -8,14 +8,13 @@ namespace CrossCorrupt
 {
     public class MainForm : Form
     {
+
+        private FileCorruptor fc;
+
         public MainForm()
         {
             XamlReader.Load(this);
-
-            CorruptManager c = new CorruptManager("C:\\Users\\Main\\Downloads", "C:\\Users\\Main\\Documents");
-
-            FileCorruptor fc = new FileCorruptor("C:\\Users\\Main\\Desktop\\test.txt", "C:\\Users\\Main\\Desktop\\test1.txt");
-            fc.DeleteCorrupt(5);
+            fc = new FileCorruptor();
         }
 
         protected void HandleClickMe(object sender, EventArgs e)
@@ -31,6 +30,35 @@ namespace CrossCorrupt
         protected void HandleQuit(object sender, EventArgs e)
         {
             Application.Instance.Quit();
+        }
+
+        /// <summary>
+        /// Update the FileCorrputor's input file when the textbox is changed
+        /// </summary>
+        protected void SetInput(object sender, EventArgs e)
+        {
+            fc.SetInFile(((TextBox)sender).Text);
+        }
+
+        /// <summary>
+        /// Update the FileCorrputor's output file when the textbox is changed
+        /// </summary>
+        protected void SetOutput(object sender, EventArgs e)
+        {
+            fc.SetOutFile(((TextBox)sender).Text);
+        }
+
+        protected void RunCorrupt(object sender, EventArgs e)
+        {
+            if (fc.GetInFile().Trim().Length > 0)
+            {
+                fc.DeleteCorrupt(5);
+            }
+            else
+            {
+                MessageBox.Show("Please enter an input file.");
+            }
+            
         }
     }
 }
