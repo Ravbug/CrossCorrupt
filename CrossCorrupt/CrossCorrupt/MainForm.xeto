@@ -3,49 +3,81 @@
 	xmlns="http://schema.picoe.ca/eto.forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="CrossCorrupt"
-	ClientSize="400, 350"
-	Padding="10"
+	ClientSize="400, 250"
+	Padding="0"
 	>
-	<StackLayout>
-
-    <TabControl>
-      <!-- Page 1 of the tabs -->
-      <TabPage x:Name="Page1" Text="Tab Numero Uno">
-        <!-- Page 1 Main Table -->
-        <TableLayout x:Name="Page1Grid" >
-          <TableRow>
-            <TextBox  x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
-            <Button Text="Choose..." Click="ChooseInputClicked"/>
+  <TableLayout x:Name="MasterTable">
+    <TableRow>
+      <TabControl>
+        <!-- Page 1 of the tabs -->
+        <TabPage x:Name="Page1" Text="Files and Folders">
+          <!-- Page 1 Main Table -->
+          <GroupBox Text="Choose what to corrpt">
+          <TableLayout x:Name="Page1Grid" >
+            <TableRow>             
+                  <RadioButton x:Name="RadioIndividualSelect" >Corrupt these file types only</RadioButton>               
+                  <RadioButton x:Name="RadioFolderSelect">Corrupt all file types except these</RadioButton>
+            </TableRow>
+            <TableRow>
+              <TextBox x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
+              <Button Width="20" Text="Choose..." Click="ChooseInputClicked" />
+            </TableRow>
+            <TableRow>
+              <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
+              <Button Text="Choose..." Click="ChooseOutputClicked"/>
+            </TableRow>
+          </TableLayout>
+           </GroupBox>
+          <!-- Page 2 of the tabs -->
+        </TabPage>
+        <TabPage x:Name="Page2" Text="Corruption Settings">
+          <TableLayout><TableRow>
+              <GroupBox Text="General Corruption Settings">      
+                  <TableLayout>
+                    <TableRow>
+                      <Label>Corrupt Every</Label>
+                      <NumericStepper x:Name="nBytesStepper"></NumericStepper>
+                      <Label>bytes</Label>
+                    </TableRow>
+                    <TableRow>
+                      <Label>Operation</Label>
+                      <ComboBox x:Name="CorruptTypeCombo"></ComboBox>
+                      <Label>New Byte:</Label>
+                      <NumericStepper x:Name="newByteStepper"></NumericStepper>
+                    </TableRow>
+                  </TableLayout>
+              </GroupBox>
+            </TableRow><TableRow>
+              <GroupBox Text="Folder Corruption Settings">
+                <TableLayout>
+                  <TableRow>
+                    <Label>File Types:</Label>
+                    <TextBox x:Name="FileTypesTxt" Text="exe,png,iso"></TextBox>
+                  </TableRow>
+                  <TableRow>
+                    <RadioButton x:Name="RadioCorruptOnly">Corrupt individual files</RadioButton>  
+                    <RadioButton x:Name="RadioCorruptExcept">Corrupt an entire folder</RadioButton>
+                </TableRow>
+                </TableLayout>
+              </GroupBox>
           </TableRow>
-          <TableRow>
-            <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
-            <Button Text="Choose..." Click="ChooseOutputClicked"/>
-          </TableRow>
-        </TableLayout>
-      <!-- Page 2 of the tabs -->
-      </TabPage>
-      <TabPage x:Name="Page2" Text="Tab Numero Dos">
-        <Label Text="YEA BOOIIIIII UR ON PAGE 2!!!" />
-      <!-- Page 3 of the tabs -->
-      </TabPage>
-      <TabPage x:Name="Page3" Text="Tab Numero Tres">
-        <Label Text="Very Nice! You found the page three!" />
-      </TabPage>
-        
-    </TabControl>
+         </TableLayout>
+          <!-- Page 3 of the tabs -->
+        </TabPage>
+        <TabPage x:Name="Page3" Text="Additional Options">
+          <Label Text="Very Nice! You found the page three!" />
+        </TabPage>
+      </TabControl>
+    </TableRow>
+    <TableRow>
+      <!-- The Run Corrput button and progress bar layout -->
+        <TableRow>
+          <Button  x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
+          <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
+        </TableRow>
+    </TableRow>
+  </TableLayout>
 
-    <!-- The Run Corrput button and progress bar layout -->
-    <TableLayout x:Name="RunAndProgressLayout">
-      <TableRow>
-        <Button x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
-        <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
-      </TableRow>
-    </TableLayout>
-
-
-
-
-  </StackLayout>
 	<Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
