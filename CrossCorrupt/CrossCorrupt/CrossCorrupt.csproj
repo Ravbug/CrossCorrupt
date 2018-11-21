@@ -7,7 +7,7 @@
     <Title>CrossCorrupt</Title>
     <Copyright>Copyright © 2018</Copyright>
     <Description>Description of CrossCorrupt</Description>
-    <ApplicationIcon />
+    <ApplicationIcon>CC.ico</ApplicationIcon>
     <OutputType>Library</OutputType>
     <StartupObject />
     <Win32Resource />
