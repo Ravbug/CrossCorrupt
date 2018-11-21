@@ -5,6 +5,7 @@
     <TargetFramework>net461</TargetFramework>
     <ApplicationManifest>CrossCorrupt.manifest</ApplicationManifest>
     <ApplicationIcon>CC.ico</ApplicationIcon>
+    <Description></Description>
   </PropertyGroup>
 	
   <ItemGroup>

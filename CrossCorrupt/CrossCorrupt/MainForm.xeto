@@ -7,9 +7,13 @@
 	Padding="10"
 	>
 	<StackLayout>
+    
 		<TextBox x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
+    <Button Text="Choose..." Click="ChooseInputClicked"/>
     <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
+    <Button Text="Choose..." Click="ChooseOutputClicked"/>
     <Button x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
+    <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
 	</StackLayout>
 	<Form.Menu>
 		<MenuBar>

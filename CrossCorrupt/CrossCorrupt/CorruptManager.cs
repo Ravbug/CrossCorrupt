@@ -33,7 +33,7 @@ namespace CrossCorrupt
         /// will mirror the folder structure in the output destination 
         /// </summary>
         /// <param name="files">Array of file paths to corrupt</param>
-        /// <param name="destination">Root folder to corrupt to</param>
+        /// <param name="destination">Root folder to corrupt to, without any trailing / or \ in the path</param>
         /// <param name="mode">Whether to Insert, Replace, or Delete corrupt the file</param>
         /// <param name="nVal">N value for the corrupting methods</param>
         /// <param name="nByte">Replacement / insertion byte</param>
@@ -75,21 +75,30 @@ namespace CrossCorrupt
 
         /// <summary>
         /// Runs the corruptor on a background thread
-        /// </summary>
-        public void Run()
+        /// </summary
+        /// <param name="callback">Void-returning method to call on progress updates. 1st param is double, 2nd param is FileInfo</param>
+        public void Run(Action<double, FileInfo> callback = null)
         {
             //initialize the background worker
             worker = new Thread(() => {
-                
-
                 FileCorruptor fc = new FileCorruptor(null,null);
                 //corrupt all the files, or corrupt only certain types?
                 if (fileTypes == null)
                 {
                     //corrupt each file in the list
-                    foreach (FileInfo f in queue)
+                    for (int i = 0; i < queue.Length; i++)
                     {
-                        string newName = f.FullName.Replace(rootfolder,outFolder);
+                        FileInfo f = queue[i];
+                        //if the corruptor is corrupting a batch of singletons, newname is different
+                        string newName;
+                        if (rootfolder == null)
+                        {
+                            newName = outFolder + Path.DirectorySeparatorChar + f.Name;
+                        }
+                        else
+                        {
+                            newName = f.FullName.Replace(rootfolder, outFolder);
+                        }
                        fc.updateFiles(f,new FileInfo(newName));
                         //create necessary folders 
                         Directory.CreateDirectory(newName.Replace(f.Name,""));
@@ -107,12 +116,19 @@ namespace CrossCorrupt
                         {
                             fc.ReplaceCorrupt(newByte, n);
                         }
+
+                        //progress update
+                        if (i == queue.Length - 1 || i % 10 == 0)
+                        {
+                            callback?.Invoke(i / queue.Length * 100, f);
+                        }
                     }
                 }
                 else
                 {
-                    foreach (FileInfo f in queue)
+                    for(int i = 0; i <queue.Length; i++)
                     {
+                        FileInfo f = queue[i];
                         //corrupt if file type is compatible
                         //TODO: invertFileTypes support
                         if (fileTypes.Contains(f.Extension))
@@ -135,6 +151,13 @@ namespace CrossCorrupt
                             {
                                 fc.ReplaceCorrupt(newByte, n);
                             }
+
+                            //progress update
+                            if (i == queue.Length - 1 || i % 10 == 0)
+                            {
+                                callback?.Invoke(i / queue.Length * 100, f);
+                            }
+
                         }
                         //otherwise copy the file
                         else

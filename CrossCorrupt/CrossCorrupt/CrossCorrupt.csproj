@@ -6,12 +6,16 @@
     <PackageVersion>1.0</PackageVersion>
     <Title>CrossCorrupt</Title>
     <Copyright>Copyright © 2018</Copyright>
-    <Description>Description of CrossCorrupt</Description>
+    <Description>This program byte-corrupts files. This description should be updated. Wheeeeee.</Description>
     <ApplicationIcon></ApplicationIcon>
     <OutputType>Library</OutputType>
     <StartupObject />
     <Win32Resource />
     <NoWin32Manifest>true</NoWin32Manifest>
+    <PackageProjectUrl>https://github.com/ravbug/crosscorrupt</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ravbug/crosscorrupt</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Company>Ravbug &amp; Broshan</Company>
   </PropertyGroup>
   
   <ItemGroup>
