@@ -7,14 +7,45 @@
 	Padding="10"
 	>
 	<StackLayout>
-    
-		<TextBox x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
-    <Button Text="Choose..." Click="ChooseInputClicked"/>
-    <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
-    <Button Text="Choose..." Click="ChooseOutputClicked"/>
-    <Button x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
-    <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
-	</StackLayout>
+
+    <TabControl>
+      <!-- Page 1 of the tabs -->
+      <TabPage x:Name="Page1" Text="Tab Numero Uno">
+        <!-- Page 1 Main Table -->
+        <TableLayout x:Name="Page1Grid" >
+          <TableRow>
+            <TextBox  x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
+            <Button Text="Choose..." Click="ChooseInputClicked"/>
+          </TableRow>
+          <TableRow>
+            <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
+            <Button Text="Choose..." Click="ChooseOutputClicked"/>
+          </TableRow>
+        </TableLayout>
+      <!-- Page 2 of the tabs -->
+      </TabPage>
+      <TabPage x:Name="Page2" Text="Tab Numero Dos">
+        <Label Text="YEA BOOIIIIII UR ON PAGE 2!!!" />
+      <!-- Page 3 of the tabs -->
+      </TabPage>
+      <TabPage x:Name="Page3" Text="Tab Numero Tres">
+        <Label Text="Very Nice! You found the page three!" />
+      </TabPage>
+        
+    </TabControl>
+
+    <!-- The Run Corrput button and progress bar layout -->
+    <TableLayout x:Name="RunAndProgressLayout">
+      <TableRow>
+        <Button x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
+        <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
+      </TableRow>
+    </TableLayout>
+
+
+
+
+  </StackLayout>
 	<Form.Menu>
 		<MenuBar>
 			<ButtonMenuItem Text="F&amp;ile">
@@ -31,9 +62,4 @@
 			</MenuBar.AboutItem>
 		</MenuBar>
 	</Form.Menu>
-	<Form.ToolBar>
-		<ToolBar>
-			<ButtonToolItem Text="Click Me!" Click="HandleClickMe" />
-		</ToolBar>
-	</Form.ToolBar>
 </Form>
