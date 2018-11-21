@@ -7,9 +7,9 @@
 	Padding="10"
 	>
 	<StackLayout>
-		<TextBox Text="Enter Input File" AutoSelectMode="OnFocus" TextChanged="SetInput" />
-    <TextBox Text="Output Location" AutoSelectMode="OnFocus" TextChanged="SetOutput"/>
-    <Button Text="Run Corrupt" Click="RunCorrupt" />
+		<TextBox x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
+    <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
+    <Button x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
 	</StackLayout>
 	<Form.Menu>
 		<MenuBar>

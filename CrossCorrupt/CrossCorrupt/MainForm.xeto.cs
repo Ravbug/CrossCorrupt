@@ -8,15 +8,16 @@ namespace CrossCorrupt
 {
     public class MainForm : Form
     {
-
-        private FileCorruptor fc;
+        //define UI elements up here, with identical name to one set in ID property (ETO doesn't auto generate these like WPF does)
+        private TextBox InfileTxt;
+        private TextBox OutfileTxt;
 
         public MainForm()
         {
             XamlReader.Load(this);
-            fc = new FileCorruptor();
         }
 
+        //some sample methods to delete later
         protected void HandleClickMe(object sender, EventArgs e)
         {
             MessageBox.Show("I was clicked!");
@@ -33,26 +34,17 @@ namespace CrossCorrupt
         }
 
         /// <summary>
-        /// Update the FileCorrputor's input file when the textbox is changed
+        /// Called when the RunCorrupt button is clicked
         /// </summary>
-        protected void SetInput(object sender, EventArgs e)
-        {
-            fc.SetInFile(((TextBox)sender).Text);
-        }
-
-        /// <summary>
-        /// Update the FileCorrputor's output file when the textbox is changed
-        /// </summary>
-        protected void SetOutput(object sender, EventArgs e)
-        {
-            fc.SetOutFile(((TextBox)sender).Text);
-        }
-
+        /// <param name="sender">Object that raised the event</param>
+        /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
         {
-            if (fc.GetInFile().Trim().Length > 0)
+            
+            if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
             {
-                fc.DeleteCorrupt(5);
+                CorruptManager cm = new CorruptManager( InfileTxt.Text, OutfileTxt.Text, CorruptManager.CorruptionType.Insert, 10, (byte)'A');
+                cm.Run();
             }
             else
             {

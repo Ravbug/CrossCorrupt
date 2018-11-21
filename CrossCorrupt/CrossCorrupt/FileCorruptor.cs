@@ -7,8 +7,8 @@ namespace CrossCorrupt
 {
     class FileCorruptor
     {
-        private string inFile;
-        private string outFile;
+        private FileInfo inFile;
+        private FileInfo outFile;
 
         /// <summary>
         /// Constructor for a FileCorruptor object
@@ -23,9 +23,9 @@ namespace CrossCorrupt
         /// <summary>
         /// Constructor for a FileCorruptor object
         /// </summary>
-        /// <param name="fIn">Fully-qualified path to the file</param>
-        /// <param name="fOut">Fully-quallified path to the destination file</param>
-        public FileCorruptor(string fIn, string fOut)
+        /// <param name="fIn">source file FileInfo object</param>
+        /// <param name="fOut">Destination path FileInfo object</param>
+        public FileCorruptor(FileInfo fIn, FileInfo fOut)
         {
             inFile = fIn;
             outFile = fOut;
@@ -36,7 +36,7 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="newIn">New file path to corrupt</param>
         /// <param name="newOut">New output destination</param>
-        public void updateFiles(string newIn, string newOut)
+        public void updateFiles(FileInfo newIn, FileInfo newOut)
         {
             inFile = newIn;
             outFile = newOut;
@@ -49,18 +49,17 @@ namespace CrossCorrupt
         /// <param name="n">the nth byte to change</param>
         public void ReplaceCorrupt(byte replacement,int n)
         {
-            CorrectPaths();
 
             //get the length of the file -- this will throw if the target file does not exist
-            FileInfo fi = new FileInfo(inFile);
+           
 
-            byte[] output = new byte[fi.Length];
+            byte[] output = new byte[inFile.Length];
 
             FileStream fileStream;
             try
             {
                 //read the file one byte at a time (reading it all at once is bad)
-                fileStream = File.OpenRead(inFile);
+                fileStream = File.OpenRead(inFile.FullName);
             }
             catch (FileNotFoundException ex)
             {
@@ -83,7 +82,11 @@ namespace CrossCorrupt
             }
 
             //write out the file
-            File.WriteAllBytes(outFile,output);
+            try
+            {
+                File.WriteAllBytes(outFile.FullName, output);
+            }
+            catch (Exception) { };
         }
 
         /// <summary>
@@ -93,18 +96,15 @@ namespace CrossCorrupt
         /// <param name="n">the nth byte to insert after</param>
         public void InsertCorrupt(byte insertion, int n)
         {
-            CorrectPaths();
-
             //get the length of the file -- this will throw if the target file does not exist
-            FileInfo fi = new FileInfo(inFile);
 
-            byte[] output = new byte[fi.Length + fi.Length/n];
+            byte[] output = new byte[inFile.Length + inFile.Length/n];
 
             FileStream fileStream;
             try
             {
                 //read the file one byte at a time (reading it all at once is bad)
-                fileStream = File.OpenRead(inFile);
+                fileStream = File.OpenRead(inFile.FullName);
             }
             catch (FileNotFoundException ex)
             {
@@ -118,7 +118,10 @@ namespace CrossCorrupt
                 {   
                     //add the byte and the extra byte
                     output[i] = (byte)fileStream.ReadByte();
-                    output[i + 1] = insertion;
+                    if (i + 1 < output.Length)
+                    {
+                        output[i + 1] = insertion;
+                    }
                     i++;
                 }
                 else
@@ -129,7 +132,11 @@ namespace CrossCorrupt
             }
 
             //write out the file
-            File.WriteAllBytes(outFile, output);
+            try
+            {
+                File.WriteAllBytes(outFile.FullName, output);
+            }
+            catch (Exception) { };
         }
 
         /// <summary>
@@ -138,10 +145,7 @@ namespace CrossCorrupt
         /// <param name="n">the nth byte to delete</param>
         public void DeleteCorrupt(int n)
         {
-            CorrectPaths();
-
             //get the length of the file -- this will throw if the target file does not exist
-            FileInfo fi = new FileInfo(inFile);
 
             List<byte> output = new List<byte>();
 
@@ -149,14 +153,14 @@ namespace CrossCorrupt
             try
             {
                 //read the file one byte at a time (reading it all at once is bad)
-                fileStream = File.OpenRead(inFile);
+                fileStream = File.OpenRead(inFile.FullName);
             }
             catch (FileNotFoundException ex)
             {
                 return;
             }
 
-            for (int i = 0; i < fi.Length-fi.Length/n; i++)
+            for (int i = 0; i < inFile.Length-inFile.Length/n; i++)
             {
                 //if this is the nth byte, set the replacement byte
                 if (i % n == 0)
@@ -172,49 +176,11 @@ namespace CrossCorrupt
             }
 
             //write out the file
-            File.WriteAllBytes(outFile, output.ToArray());
-        }
-
-        /// <summary>
-        /// Sets the new input file for corruption
-        /// </summary>
-        /// <param name="newIn">The path of new file to be used</param>
-        public void SetInFile(string newIn)
-        {
-            inFile = newIn;
-        }
-
-        /// <summary>
-        /// Sets the new output file for corruption
-        /// </summary>
-        /// <param name="newIn">The path of new file to be used</param>
-        public void SetOutFile(string newOut)
-        {
-            outFile = newOut;
-        }
-
-        public string GetInFile()
-        {
-            return inFile.ToString();
-        }
-
-        public string GetOutFile()
-        {
-            return outFile.ToString();
-        }
-
-
-        private void CorrectPaths()
-        {
-            if (inFile.Trim().Length == 0)
+            try
             {
-                return;
+                File.WriteAllBytes(outFile.FullName, output.ToArray());
             }
-            if (outFile.Trim().Length == 0)
-            {
-                string extension = inFile.Substring(inFile.LastIndexOf("."));
-                outFile = inFile.Substring(0, inFile.LastIndexOf(".")) + "Corrupted" + extension;
-            }
+            catch (Exception e) { };
         }
     }
 }
