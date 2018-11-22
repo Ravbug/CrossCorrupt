@@ -16,10 +16,10 @@
           <TableLayout x:Name="Page1Grid" >
             <TableRow>             
                   <RadioButton x:Name="RadioIndividualSelect" >Corrupt these file types only</RadioButton>               
-                  <RadioButton x:Name="RadioFolderSelect">Corrupt all file types except these</RadioButton>
+                  <RadioButton x:Name="RadioFolderSelect" >Corrupt all file types except these</RadioButton>
             </TableRow>
             <TableRow>
-              <TextBox x:Name="InfileTxt" PlaceholderText="Enter Input File" AutoSelectMode="OnFocus" />
+              <TextBox x:Name="InfileTxt" PlaceholderText="Input Location" AutoSelectMode="OnFocus" />
               <Button Width="20" Text="Choose..." Click="ChooseInputClicked" />
             </TableRow>
             <TableRow>
@@ -41,7 +41,7 @@
                     </TableRow>
                     <TableRow>
                       <Label>Operation</Label>
-                      <ComboBox x:Name="CorruptTypeCombo"></ComboBox>
+                      <DropDown x:Name="CorruptTypeCombo"></DropDown>
                       <Label>New Byte:</Label>
                       <NumericStepper x:Name="newByteStepper"></NumericStepper>
                     </TableRow>
