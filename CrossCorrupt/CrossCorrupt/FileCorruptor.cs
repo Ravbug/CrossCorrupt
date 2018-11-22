@@ -47,6 +47,7 @@ namespace CrossCorrupt
                 else
                 {
                     //add the byte from the file
+                    //for some reason ReadByte returns an int, so casts to byte
                     output[i] = (byte)fileStream.ReadByte();
                 }
             }
