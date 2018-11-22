@@ -65,7 +65,30 @@
           <!-- Page 3 of the tabs -->
         </TabPage>
         <TabPage x:Name="Page3" Text="Additional Options">
-          <Label Text="Very Nice! You found the page three!" />
+          <TableLayout>
+            <TableRow>
+              <GroupBox Text="Folder Scramble">
+                <TableLayout>
+                  <TableRow>
+                    <Label>Set Folders</Label>
+                  </TableRow>
+                  <TableRow>
+                    <TextBox PlaceholderText="Path to folder"></TextBox>
+                    <Button Text="Choose"></Button>
+                  </TableRow>
+                  <TableRow>
+                    <Label>Set file extensions to corrupt</Label>
+                  </TableRow>
+                  <TableRow>
+                    <TextArea x:Name="FolderScrambleTypesTxt" Text=".png, .txt, .jpg" ></TextArea>
+                  </TableRow>
+                  <TableRow>
+                    <CheckBox x:Name="FolderScrambleInvertChk" Text="Scramble all except these types"></CheckBox>
+                  </TableRow>
+                </TableLayout>
+              </GroupBox>
+            </TableRow>
+          </TableLayout>
         </TabPage>
       </TabControl>
     </TableRow>
