@@ -19,7 +19,10 @@ namespace CrossCorrupt
 
         //args for corruption
         private int n;
+        private byte oldByte;
         private byte newByte;
+        private long startByte;
+        private long endByte;
 
         CorruptionType corruptType;
 
@@ -35,10 +38,13 @@ namespace CrossCorrupt
         /// <param name="files">Array of file paths to corrupt</param>
         /// <param name="destination">Root folder to corrupt to, without any trailing / or \ in the path</param>
         /// <param name="mode">Whether to Insert, Replace, or Delete corrupt the file</param>
+        /// <param name="sByte">Byte to start corrupting from.</param>
+        /// <param name="eByte">Byte to stop corrupting from. Pass -1 to automatically set the end byte.</param>
         /// <param name="nVal">N value for the corrupting methods</param>
+        /// <param name="obyte">bye to replace / insert after / delete</param>
         /// <param name="nByte">Replacement / insertion byte</param>
         /// <param name="overwriteOriginal">True if the program should overwrite the existing files</param>
-        public CorruptManager(string[] files, string destination, CorruptionType mode, int nVal, byte nByte=0, bool overwriteOriginal=false)
+        public CorruptManager(string[] files, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte obyte, byte nByte=0, bool overwriteOriginal=false)
         {
             queue = new FileInfo[files.Length];
             for (int i = 0; i < files.Length; i++)
@@ -49,6 +55,10 @@ namespace CrossCorrupt
             overwrite = overwriteOriginal;
             corruptType = mode;
             n = nVal; newByte = nByte;
+            startByte = sByte;
+            endByte = eByte;
+            newByte = nByte;
+            oldByte = obyte;
         }
 
         /// <summary>
@@ -56,21 +66,21 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="rootFolder">Root folder to corrupt</param>
         /// <param name="destination">Folder to place the corrupted files</param>
-        /// <param name="mode">Whether to Insert, Replace, or Delete corrupt the file</param>
+        /// <param name="mode">Whether to Insert, Replace, or Delete corrupt the file</param>\
+        /// <param name="sByte">Byte to start corrupting from.</param>
+        /// <param name="eByte">Byte to stop corrupting from. Pass -1 to automatically set the end byte.</param>
         /// <param name="nVal">N value for the corrupting methods</param>
+        /// <param name="obyte">bye to replace / insert after / delete</param>
         /// <param name="nByte">Replacement / insertion byte</param>
         /// <param name="filetypes">Array of file extensions to corrupt, or null to corrupt all file extensions</param>
         /// <param name="overwriteOriginal">True if the program should overwrite the existing files</param>
-        public CorruptManager(string rootFolder, string destination, CorruptionType mode, int nVal, byte nByte=0, HashSet<string> filetypes=null, bool overwriteOriginal=false)
+        public CorruptManager(string rootFolder, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte oByte, byte nByte=0, HashSet<string> filetypes=null, bool overwriteOriginal=false) : this(new string[0], destination, mode, sByte, eByte, nVal, oByte, nByte, overwriteOriginal)
         {
-            outFolder = destination;
-            overwrite = overwriteOriginal;
+            //calls the above constructor before executing this
             fileTypes = filetypes;
             //build the queue of files
             rootfolder = rootFolder;
             queue = queueFromRoot(rootFolder);
-            corruptType = mode;
-            n = nVal; newByte = nByte;
         }
 
         /// <summary>
@@ -81,7 +91,7 @@ namespace CrossCorrupt
         {
             //initialize the background worker
             worker = new Thread(() => {
-                FileCorruptor fc = new FileCorruptor(null,null);
+                FileCorruptor fc = new FileCorruptor(null,null,startByte,endByte);
                 //corrupt all the files, or corrupt only certain types?
                 if (fileTypes == null)
                 {
@@ -106,15 +116,15 @@ namespace CrossCorrupt
                         //run the corrupt
                         if (corruptType == CorruptionType.Insert)
                         {
-                            fc.InsertCorrupt(newByte,n);
+                            fc.InsertCorrupt(oldByte,newByte,n);
                         }
                         else if (corruptType == CorruptionType.Delete)
                         {
-                            fc.DeleteCorrupt(n);
+                            fc.DeleteCorrupt(oldByte,n);
                         }
                         else
                         {
-                            fc.ReplaceCorrupt(newByte, n);
+                            fc.ReplaceCorrupt(oldByte,newByte, n);
                         }
 
                         //progress update
@@ -141,15 +151,15 @@ namespace CrossCorrupt
                             //run the corrupt
                             if (corruptType == CorruptionType.Insert)
                             {
-                                fc.InsertCorrupt(newByte, n);
+                                fc.InsertCorrupt(oldByte,newByte, n);
                             }
                             else if (corruptType == CorruptionType.Delete)
                             {
-                                fc.DeleteCorrupt(n);
+                                fc.DeleteCorrupt(oldByte,n);
                             }
                             else
                             {
-                                fc.ReplaceCorrupt(newByte, n);
+                                fc.ReplaceCorrupt(oldByte,newByte, n);
                             }
 
                             //progress update

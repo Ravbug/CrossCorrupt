@@ -3,7 +3,7 @@
 	xmlns="http://schema.picoe.ca/eto.forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="CrossCorrupt"
-	ClientSize="400, 250"
+	ClientSize="500, 250"
 	Padding="0"
 	>
   <TableLayout x:Name="MasterTable">
@@ -14,16 +14,19 @@
           <!-- Page 1 Main Table -->
           <GroupBox Text="Choose what to corrpt">
           <TableLayout x:Name="Page1Grid" >
-            <TableRow>             
-                  <RadioButton x:Name="RadioIndividualSelect" >Corrupt these file types only</RadioButton>               
-                  <RadioButton x:Name="RadioFolderSelect" >Corrupt all file types except these</RadioButton>
+            <TableRow>    
+                <RadioButtonList x:Name="SelectTypeList">
+                <ListItem Text="Select individual files"/>
+                <ListItem Text="Select Folders"/>
+              </RadioButtonList>
+                  
             </TableRow>
             <TableRow>
-              <TextBox x:Name="InfileTxt" PlaceholderText="Input Location" AutoSelectMode="OnFocus" />
+              <Label x:Name="InfileTxt" Text="Input directory"/>
               <Button Width="20" Text="Choose..." Click="ChooseInputClicked" />
             </TableRow>
             <TableRow>
-              <TextBox x:Name="OutfileTxt" PlaceholderText="Output Location" AutoSelectMode="OnFocus" />
+              <Label x:Name="OutfileTxt" Text="Output Location" />
               <Button Text="Choose..." Click="ChooseOutputClicked"/>
             </TableRow>
           </TableLayout>
@@ -36,13 +39,22 @@
                   <TableLayout>
                     <TableRow>
                       <Label>Corrupt Every</Label>
-                      <NumericStepper x:Name="nBytesStepper"></NumericStepper>
+                      <NumericStepper x:Name="nBytesStepper" Value="50"></NumericStepper>
                       <Label>bytes</Label>
+                    </TableRow>
+                    <TableRow>
+                      <Label>Start byte</Label>
+                      <NumericStepper x:Name="startByteStepper" MinValue="0" Value="100"></NumericStepper>
+                      <Label>End Byte</Label>
+                      <NumericStepper x:Name="endBytesStepper" Value="-1" MinValue="-1" Enabled="False"></NumericStepper>
+                    <CheckBox x:Name="autoEndCheck" Checked="true" CheckedChanged="handleAutoEndClick">Auto End Byte</CheckBox>
                     </TableRow>
                     <TableRow>
                       <Label>Operation</Label>
                       <DropDown x:Name="CorruptTypeCombo"></DropDown>
-                      <Label>New Byte:</Label>
+                      <Label>Old byte</Label>
+                      <NumericStepper x:Name="oldByteStepper" Value="1"></NumericStepper>
+                      <Label>New Byte</Label>
                       <NumericStepper x:Name="newByteStepper"></NumericStepper>
                     </TableRow>
                   </TableLayout>

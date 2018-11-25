@@ -9,13 +9,38 @@ namespace CrossCorrupt
     public class MainForm : Form
     {
         //define UI elements up here, with identical name to one set in ID property (ETO doesn't auto generate these like WPF does)
-        private TextBox InfileTxt;
-        private TextBox OutfileTxt;
+        private Label InfileTxt;
+        private Label OutfileTxt;
         private ProgressBar MainProg;
+        private RadioButtonList SelectTypeList;
+        private NumericStepper nBytesStepper;
+        private NumericStepper startByteStepper;
+        private NumericStepper endBytesStepper;
+        private NumericStepper oldByteStepper;
+        private NumericStepper newByteStepper;
+        private CheckBox autoEndCheck;
+
+        private string[] sourceFiles;
 
         public MainForm()
         {
+
             XamlReader.Load(this);
+            SelectTypeList.SelectedIndex = 0;
+        }
+
+        //when the Auto End byte is clicked
+        protected void handleAutoEndClick(object sender, EventArgs e)
+        {
+            if ((bool)autoEndCheck.Checked)
+            {
+                endBytesStepper.Value = -1;
+            }
+            else
+            {
+                endBytesStepper.Value = 100;
+            }
+            endBytesStepper.Enabled = !(bool)autoEndCheck.Checked;
         }
 
         //some sample methods to delete later
@@ -24,6 +49,7 @@ namespace CrossCorrupt
             MessageBox.Show("I was clicked!");
         }
 
+        //but keep these
         protected void HandleAbout(object sender, EventArgs e)
         {
             new AboutDialog().ShowDialog(this);
@@ -44,7 +70,17 @@ namespace CrossCorrupt
             
             if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
             {
-                CorruptManager cm = new CorruptManager( new string[] { InfileTxt.Text }, OutfileTxt.Text, CorruptManager.CorruptionType.Insert, 10, (byte)'A');
+                CorruptManager cm;
+                if (SelectTypeList.SelectedIndex == 0)
+                {
+                    cm = new CorruptManager(sourceFiles, OutfileTxt.Text, CorruptManager.CorruptionType.Replace, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
+
+                }
+                else
+                {
+                    cm = new CorruptManager(InfileTxt.Text, OutfileTxt.Text, CorruptManager.CorruptionType.Replace, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
+                }
+
                 cm.Run((double prog, System.IO.FileInfo f) =>
                 {
                     Application.Instance.Invoke(() =>
@@ -68,7 +104,18 @@ namespace CrossCorrupt
         /// <param name="e">Event args</param>
         protected void ChooseInputClicked(object sender, EventArgs e)
         {
-            InfileTxt.Text = PromptForFile("Select the file you want to corrupt");
+            if (SelectTypeList.SelectedIndex == 0)
+            {
+                sourceFiles = PromptForFile("Select the file you want to corrupt", true);
+                if (sourceFiles != null)
+                {
+                    InfileTxt.Text = sourceFiles[0] + " and " + sourceFiles.Length + " more";
+                }
+            }
+            else
+            {
+                InfileTxt.Text = PromptForFolder("Select the folder to corrupt");
+            }
         }
 
         /// <summary>
@@ -86,14 +133,14 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="prompt">Text to use to prompt the user</param>
         /// <returns>File path selected, or null if nothing was selected</returns>
-        private string PromptForFile(string prompt)
+        private string[] PromptForFile(string prompt,bool multiSelect=false)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.MultiSelect = false;
+            dialog.MultiSelect = multiSelect;
             dialog.Title = prompt;
             if (dialog.ShowDialog(this) == DialogResult.Ok)
-            {
-                return dialog.FileName;
+            {        
+                return (string[])dialog.Filenames;
             }
             else
             {

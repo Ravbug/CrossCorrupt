@@ -10,25 +10,20 @@ namespace CrossCorrupt
         private FileInfo inFile;
         private FileInfo outFile;
 
-        /// <summary>
-        /// Constructor for a FileCorruptor object
-        /// </summary>
-        /// <param name="fIn">Fully-qualified path to the file</param>
-        /// <param name="fOut">Fully-quallified path to the destination file</param>
-        public FileCorruptor()
-        {
-            //nothing to see here
-        }
+        private long startByte;
+        private long endByte;
 
         /// <summary>
         /// Constructor for a FileCorruptor object
         /// </summary>
         /// <param name="fIn">source file FileInfo object</param>
         /// <param name="fOut">Destination path FileInfo object</param>
-        public FileCorruptor(FileInfo fIn, FileInfo fOut)
+        public FileCorruptor(FileInfo fIn, FileInfo fOut, long sByte, long eByte)
         {
             inFile = fIn;
             outFile = fOut;
+            startByte = sByte;
+            endByte = eByte;
         }
 
         /// <summary>
@@ -43,51 +38,66 @@ namespace CrossCorrupt
         }
 
         /// <summary>
+        /// Reads the file into an array of bytes
+        /// </summary>
+        /// <param name="file">FileInfo represnting file to read</param>
+        /// <returns>List of integers representing the file</returns>
+        private List<byte> readFile(FileInfo file)
+        {
+            var fileContents = new List<byte>();
+            FileStream filestream;
+            try
+            {
+                filestream = File.OpenRead(file.FullName);
+            }
+            catch (FileNotFoundException) { return null; }
+
+            long stop = file.Length;
+
+            if (endByte == -1)
+            {
+                endByte = stop;
+            }
+
+            for (int i = 0; i < stop; i++)
+            {
+                fileContents.Add((byte)filestream.ReadByte());
+            }
+
+            return fileContents;
+        }
+
+        /// <summary>
+        /// Writes a file to disk
+        /// </summary>
+        /// <param name="file">List with the file data</param>
+        private void writeFile(List<byte> file)
+        {
+            //write out the file
+            try
+            {
+                File.WriteAllBytes(outFile.FullName, file.ToArray());
+            }
+            catch (Exception) { };
+        }
+
+        /// <summary>
         /// Corrupts a file by changing every nth byte to a specified byte, and writes the resulting file to the outFile directory
         /// </summary>
         /// <param name="replacement">replacement byte</param>
         /// <param name="n">the nth byte to change</param>
-        public void ReplaceCorrupt(byte replacement,int n)
+        public void ReplaceCorrupt(byte old, byte replacement,int n)
         {
+            var file = readFile(inFile);
 
-            //get the length of the file -- this will throw if the target file does not exist
-           
-
-            byte[] output = new byte[inFile.Length];
-
-            FileStream fileStream;
-            try
+            for (int i = 0; i < endByte; i++)
             {
-                //read the file one byte at a time (reading it all at once is bad)
-                fileStream = File.OpenRead(inFile.FullName);
-            }
-            catch (FileNotFoundException ex)
-            {
-                return;
-            }
-
-            for (int i = 0; i < output.Length; i++)
-            {
-                //if this is the nth byte, set the replacement byte
-                if (i % n == 0)
+                if (i % n == 0 && file[i] == old)
                 {
-                    fileStream.ReadByte();
-                    output[i] = replacement;
-                }
-                else
-                {
-                    //add the byte from the file
-                    //for some reason ReadByte returns an int, so casts to byte
-                    output[i] = (byte)fileStream.ReadByte();
+                    file[i] = replacement;
                 }
             }
-
-            //write out the file
-            try
-            {
-                File.WriteAllBytes(outFile.FullName, output);
-            }
-            catch (Exception) { };
+            writeFile(file);
         }
 
         /// <summary>
@@ -95,93 +105,37 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="insertion">byet to insert</param>
         /// <param name="n">the nth byte to insert after</param>
-        public void InsertCorrupt(byte insertion, int n)
+        public void InsertCorrupt(byte insertAfter, byte insertion, int n)
         {
-            //get the length of the file -- this will throw if the target file does not exist
+            var file = readFile(inFile);
 
-            byte[] output = new byte[inFile.Length + inFile.Length/n];
-
-            FileStream fileStream;
-            try
+            for (int i = 0; i < endByte; i++)
             {
-                //read the file one byte at a time (reading it all at once is bad)
-                fileStream = File.OpenRead(inFile.FullName);
-            }
-            catch (FileNotFoundException ex)
-            {
-                return;
-            }
-
-            for (int i = 0; i < output.Length; i++)
-            {
-                //if this is the nth byte, set the replacement byte
-                if (i % n == 0)
-                {   
-                    //add the byte and the extra byte
-                    output[i] = (byte)fileStream.ReadByte();
-                    if (i + 1 < output.Length)
-                    {
-                        output[i + 1] = insertion;
-                    }
-                    i++;
-                }
-                else
+                if (i % n == 0 && file[i] == insertAfter)
                 {
-                    //add the byte from the file
-                    output[i] = (byte)fileStream.ReadByte();
+                    file.Insert(i, insertion);
+                    endByte++;
                 }
             }
-
-            //write out the file
-            try
-            {
-                File.WriteAllBytes(outFile.FullName, output);
-            }
-            catch (Exception) { };
+            writeFile(file);
         }
 
         /// <summary>
         /// Corrupts the file by deleting every nth byte, and writes the resulting file to the outFile directory
         /// </summary>
         /// <param name="n">the nth byte to delete</param>
-        public void DeleteCorrupt(int n)
+        public void DeleteCorrupt(byte toDelete, int n)
         {
-            //get the length of the file -- this will throw if the target file does not exist
+            var file = readFile(inFile);
 
-            List<byte> output = new List<byte>();
-
-            FileStream fileStream;
-            try
+            for (long i = endByte; i >= startByte; i--)
             {
-                //read the file one byte at a time (reading it all at once is bad)
-                fileStream = File.OpenRead(inFile.FullName);
-            }
-            catch (FileNotFoundException ex)
-            {
-                return;
-            }
-
-            for (int i = 0; i < inFile.Length-inFile.Length/n; i++)
-            {
-                //if this is the nth byte, set the replacement byte
-                if (i % n == 0)
+                if (i % n == 0 && file[(int)i] == toDelete)
                 {
-                    //skip the byte
-                    fileStream.ReadByte();
-                }
-                else
-                {
-                    //add the byte from the file
-                    output.Add((byte)fileStream.ReadByte());
+                    file.RemoveAt((int)i);
                 }
             }
-
-            //write out the file
-            try
-            {
-                File.WriteAllBytes(outFile.FullName, output.ToArray());
-            }
-            catch (Exception e) { };
+            writeFile(file);
         }
     }
 }
