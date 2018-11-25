@@ -15,7 +15,7 @@
           <GroupBox Text="Choose what to corrpt">
           <TableLayout x:Name="Page1Grid" >
             <TableRow>    
-                <RadioButtonList x:Name="SelectTypeList">
+                <RadioButtonList x:Name="SelectTypeList" SelectedValueChanged="corruptTypeClicked">
                 <ListItem Text="Select individual files"/>
                 <ListItem Text="Select Folders"/>
               </RadioButtonList>
@@ -51,7 +51,11 @@
                     </TableRow>
                     <TableRow>
                       <Label>Operation</Label>
-                      <DropDown x:Name="CorruptTypeCombo"></DropDown>
+                      <DropDown x:Name="CorruptTypeCombo">
+                        <ListItem Text="Replace" />
+                        <ListItem Text="Insert After" />
+                        <ListItem Text="Delete" />
+                      </DropDown>
                       <Label>Old byte</Label>
                       <NumericStepper x:Name="oldByteStepper" Value="1"></NumericStepper>
                       <Label>New Byte</Label>
@@ -60,16 +64,21 @@
                   </TableLayout>
               </GroupBox>
             </TableRow><TableRow>
-              <GroupBox Text="Folder Corruption Settings">
+              <GroupBox x:Name="FolderCorruptBox" Enabled="False" Text="Folder Corruption Settings">
                 <TableLayout>
                   <TableRow>
                     <Label>File Types:</Label>
                     <TextBox x:Name="FileTypesTxt" Text="exe,png,iso"></TextBox>
                   </TableRow>
                   <TableRow>
-                    <RadioButton x:Name="RadioCorruptOnly">Corrupt individual files</RadioButton>  
-                    <RadioButton x:Name="RadioCorruptExcept">Corrupt an entire folder</RadioButton>
+                    <RadioButtonList x:Name="folderCorruptSelect" >
+                      <ListItem Text="Corrupt these types only" />
+                      <ListItem Text="Corrupt all except these types" />
+                    </RadioButtonList>
                 </TableRow>
+                  <TableRow>
+                    <CheckBox x:Name="EnableFolderScrambleChck" CheckedChanged="enableFolderScrambleStateChanged">Enable Folder Scramble</CheckBox>
+                  </TableRow>
                 </TableLayout>
               </GroupBox>
           </TableRow>
@@ -79,7 +88,7 @@
         <TabPage x:Name="Page3" Text="Additional Options">
           <TableLayout>
             <TableRow>
-              <GroupBox Text="Folder Scramble">
+              <GroupBox x:Name="FolderScrambleBox" Enabled="False" Text="Folder Scramble">
                 <TableLayout>
                   <TableRow>
                     <Label>Set Folders</Label>
