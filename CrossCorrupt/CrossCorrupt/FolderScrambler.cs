@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Threading;
 
 namespace CrossCorrupt
 {
@@ -25,7 +23,7 @@ namespace CrossCorrupt
         {
             folderPath = folder;
             random = new Random();
-            generateNameList(folder, allExcept, extensions);
+            GenerateNameList(folder, allExcept, extensions);
         }
 
         /// <summary>
@@ -34,7 +32,7 @@ namespace CrossCorrupt
         /// <param name="folder">Folder to scramble names</param>
         /// <param name="allExcept">True if the extensions given are exclusions</param>
         /// <param name="extensions">A HashSet of all the extensions to look for</param>
-        private void generateNameList(string folder, bool allExcept, HashSet<string> extensions)
+        private void GenerateNameList(string folder, bool allExcept, HashSet<string> extensions)
         {
             DirectoryInfo di = new DirectoryInfo(folder);
             FileInfo[] inFiles = di.GetFiles();
@@ -43,7 +41,7 @@ namespace CrossCorrupt
             {
                 ext = inFiles[i].Extension;
                 if (extensions == null
-                    ||allExcept && !extensions.Contains(ext)
+                    || allExcept && !extensions.Contains(ext)
                     || !allExcept && extensions.Contains(ext))
                 {
                     if (!fileNames.ContainsKey(ext))
@@ -72,17 +70,17 @@ namespace CrossCorrupt
                         randomNum = random.Next(0, names.Count);
                     }
                     usedNums.Add(randomNum);
-                    File.Move(createFullPath(names[i]), createFullPath(names[randomNum]) + tempExtension);
+                    File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
                 }
             }
 
-            cleanTempExtensions();
+            CleanTempExtensions();
         }
 
         /// <summary>
         /// Removes the temporary extension given to all files generated while scrambling.
         /// </summary>
-        private void cleanTempExtensions()
+        private void CleanTempExtensions()
         {
             DirectoryInfo di = new DirectoryInfo(folderPath);
             FileInfo[] newFiles = di.GetFiles();
@@ -90,7 +88,7 @@ namespace CrossCorrupt
             {
                 if (file.Extension == tempExtension)
                 {
-                    File.Move(file.FullName, createFullPath(file.Name));
+                    File.Move(file.FullName, CreateFullPath(file.Name));
                 }
             }
         }
@@ -100,7 +98,7 @@ namespace CrossCorrupt
         /// </summary>
         /// <param name="name">The file name to get the path of.</param>
         /// <returns>The full path of the file given</returns>
-        private string createFullPath(string name)
+        private string CreateFullPath(string name)
         {
             return folderPath + name;
         }
