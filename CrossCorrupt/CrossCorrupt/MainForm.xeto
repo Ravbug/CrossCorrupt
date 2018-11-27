@@ -39,15 +39,16 @@
                   <TableLayout>
                     <TableRow>
                       <Label>Corrupt Every</Label>
-                      <NumericStepper x:Name="nBytesStepper" Value="50"></NumericStepper>
-                      <Label>bytes</Label>
+                      <NumericStepper x:Name="nBytesStepper" Value="50"  FormatString="0'th'"></NumericStepper>
+                      <Label>byte</Label>
                     </TableRow>
                     <TableRow>
                       <Label>Start byte</Label>
                       <NumericStepper x:Name="startByteStepper" MinValue="0" Value="100"></NumericStepper>
                       <Label>End Byte</Label>
                       <NumericStepper x:Name="endBytesStepper" Value="-1" MinValue="-1" Enabled="False"></NumericStepper>
-                    <CheckBox x:Name="autoEndCheck" Checked="true" CheckedChanged="handleAutoEndClick">Auto End Byte</CheckBox>
+                    <CheckBox x:Name="autoEndCheck" Checked="true" CheckedChanged="handleAutoEndClick"
+                              ToolTip="Lets CrossCorrupt find the last byte.">Auto End Byte</CheckBox>
                     </TableRow>
                     <TableRow>
                       <Label>Operation</Label>
@@ -77,7 +78,10 @@
                     </RadioButtonList>
                 </TableRow>
                   <TableRow>
-                    <CheckBox x:Name="EnableFolderScrambleChck" CheckedChanged="enableFolderScrambleStateChanged">Enable Folder Scramble</CheckBox>
+                    <CheckBox x:Name="EnableFolderScrambleChck" 
+                              CheckedChanged="enableFolderScrambleStateChanged"
+                              ToolTip="Scrambles the names of the files in a folder. See &quot;Additional Options&quot;"
+                              >Enable Folder Scramble</CheckBox>
                   </TableRow>
                 </TableLayout>
               </GroupBox>
