@@ -84,7 +84,13 @@ namespace CrossCorrupt
                 sourceFiles = PromptForFile("Select the file you want to corrupt", true);
                 if (sourceFiles != null)
                 {
-                    InfileTxt.Text = sourceFiles[0] + " and " + sourceFiles.Length + " more";
+                    string text = "";
+                    text += sourceFiles[0];
+                    if (sourceFiles.Length > 1)
+                    {
+                        text += " and " + (sourceFiles.Length - 1) + " more";
+                    }
+                    InfileTxt.Text = text;
                 }
             }
             else
