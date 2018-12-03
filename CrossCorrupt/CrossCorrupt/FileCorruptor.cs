@@ -115,6 +115,7 @@ namespace CrossCorrupt
                 {
                     file.Insert(i, insertion);
                     endByte++;
+                    i++; //avoid infinite loops if insertion == insertAfter
                 }
             }
             writeFile(file);

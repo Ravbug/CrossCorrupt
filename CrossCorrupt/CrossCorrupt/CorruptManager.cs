@@ -11,7 +11,6 @@ namespace CrossCorrupt
         private FileInfo[] queue;
         private string outFolder;
         private string rootfolder;
-        private bool overwrite;
 
         private HashSet<string> fileTypes;
         private bool invertFiletypes; //if the above set should be use to corrupt all file types EXCEPT those listed inside
@@ -43,8 +42,7 @@ namespace CrossCorrupt
         /// <param name="nVal">N value for the corrupting methods</param>
         /// <param name="obyte">bye to replace / insert after / delete</param>
         /// <param name="nByte">Replacement / insertion byte</param>
-        /// <param name="overwriteOriginal">True if the program should overwrite the existing files</param>
-        public CorruptManager(string[] files, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte obyte, byte nByte=0, bool overwriteOriginal=false)
+        public CorruptManager(string[] files, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte obyte, byte nByte=0)
         {
             queue = new FileInfo[files.Length];
             for (int i = 0; i < files.Length; i++)
@@ -52,7 +50,6 @@ namespace CrossCorrupt
                 queue[i] = new FileInfo(files[i]);
             }
             outFolder = destination;
-            overwrite = overwriteOriginal;
             corruptType = mode;
             n = nVal; newByte = nByte;
             startByte = sByte;
@@ -73,14 +70,15 @@ namespace CrossCorrupt
         /// <param name="obyte">bye to replace / insert after / delete</param>
         /// <param name="nByte">Replacement / insertion byte</param>
         /// <param name="filetypes">Array of file extensions to corrupt, or null to corrupt all file extensions</param>
-        /// <param name="overwriteOriginal">True if the program should overwrite the existing files</param>
-        public CorruptManager(string rootFolder, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte oByte, byte nByte=0, HashSet<string> filetypes=null, bool overwriteOriginal=false) : this(new string[0], destination, mode, sByte, eByte, nVal, oByte, nByte, overwriteOriginal)
+        /// <param name="inverttypes">True if the program should corrupt every file EXCEPT those in the filetypes hashset</param>
+        public CorruptManager(string rootFolder, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte oByte, byte nByte=0, HashSet<string> filetypes=null, bool inverttypes=false) : this(new string[0], destination, mode, sByte, eByte, nVal, oByte, nByte)
         {
             //calls the above constructor before executing this
             fileTypes = filetypes;
             //build the queue of files
             rootfolder = rootFolder;
             queue = queueFromRoot(rootFolder);
+            invertFiletypes = inverttypes;
         }
 
         /// <summary>
@@ -109,28 +107,17 @@ namespace CrossCorrupt
                         {
                             newName = f.FullName.Replace(rootfolder, outFolder);
                         }
-                       fc.updateFiles(f,new FileInfo(newName));
+                         fc.updateFiles(f,new FileInfo(newName));
                         //create necessary folders 
                         Directory.CreateDirectory(newName.Replace(f.Name,""));
 
-                        //run the corrupt
-                        if (corruptType == CorruptionType.Insert)
-                        {
-                            fc.InsertCorrupt(oldByte,newByte,n);
-                        }
-                        else if (corruptType == CorruptionType.Delete)
-                        {
-                            fc.DeleteCorrupt(oldByte,n);
-                        }
-                        else
-                        {
-                            fc.ReplaceCorrupt(oldByte,newByte, n);
-                        }
+                        //corrupt the file
+                        corruptOne(fc, corruptType, n, oldByte, newByte);
 
                         //progress update
                         if (i == queue.Length - 1 || i % 10 == 0)
                         {
-                            callback?.Invoke(i / queue.Length * 100, f);
+                            callback?.Invoke((double)(i+1) / queue.Length * 100, f);
                         }
                     }
                 }
@@ -140,47 +127,37 @@ namespace CrossCorrupt
                     {
                         FileInfo f = queue[i];
                         //corrupt if file type is compatible
-                        //TODO: invertFileTypes support
-                        if (fileTypes.Contains(f.Extension))
+                        //if not inverting and has type, or inverting and does not have type
+                        if ((fileTypes.Contains(f.Extension) && !invertFiletypes) || (invertFiletypes && !fileTypes.Contains(f.Extension)))
                         {
                             string newName = f.FullName.Replace(rootfolder, outFolder);
                             fc.updateFiles(f, new FileInfo(newName));
                             //create necessary directories
                             Directory.CreateDirectory(newName.Replace(f.Name, ""));
 
-                            //run the corrupt
-                            if (corruptType == CorruptionType.Insert)
-                            {
-                                fc.InsertCorrupt(oldByte,newByte, n);
-                            }
-                            else if (corruptType == CorruptionType.Delete)
-                            {
-                                fc.DeleteCorrupt(oldByte,n);
-                            }
-                            else
-                            {
-                                fc.ReplaceCorrupt(oldByte,newByte, n);
-                            }
+                            //corrupt the file
+                            corruptOne(fc,corruptType,n,oldByte,newByte);
 
                             //progress update
                             if (i == queue.Length - 1 || i % 10 == 0)
                             {
-                                callback?.Invoke(i / queue.Length * 100, f);
+                                callback?.Invoke((double)(i+1) / queue.Length * 100, f);
                             }
 
                         }
                         //otherwise copy the file
                         else
                         {
-                            //minimize unnecessary disk IO
-                            if (!overwrite)
+                            string newName = f.FullName.Replace(rootfolder, outFolder);
+                            //create necessary directories
+                            Directory.CreateDirectory(newName.Replace(f.Name, ""));
+                            //copy the file, overwrite it if necessary
+                            try
                             {
-                                string newName = f.FullName.Replace(rootfolder, outFolder);
-                                //create necessary directories
-                                Directory.CreateDirectory(newName.Replace(f.Name, ""));
-                                //copy the file
-                                File.Copy(f.FullName, newName);
+                                File.Copy(f.FullName, newName, true);
                             }
+                            //if unable to copy, catch silently
+                            catch (Exception) { }
                         }
                     }
                 }
@@ -188,6 +165,54 @@ namespace CrossCorrupt
                 //if overwrite is true, then instead of copying files, leave them where they are
             });
             worker.Start();
+        }
+
+        /// <summary>
+        /// Run the folder scrambler on a background thread
+        /// </summary>
+        /// <param name="Folder">Path to the folder to scramble</param>
+        /// <param name="allExcept">Whether to scramble all types except those in the hashset </param>
+        /// <param name="extensions">HashSet of file extensions to scramble</param>
+        public void ScrambleFolder(string Folder, bool allExcept, HashSet<string> extensions=null)
+        {
+            worker = new Thread(() =>
+            {
+                //TODO: call FolderScrambler to either scramble or revert here        
+            });
+            worker.Start();
+        }
+
+        /// <summary>
+        /// Stops the background thread
+        /// </summary>
+        public void CancelWorker()
+        {
+            worker.Abort();
+        }
+
+        /// <summary>
+        /// Run the FileCorrupter once
+        /// </summary>
+        /// <param name="fc">FileCorrupter object</param>
+        /// <param name="corruptType">Enum stating which corrupt type to use</param>
+        /// <param name="n">n value for fc</param>
+        /// <param name="oldByte">oldByte for fc</param>
+        /// <param name="newByte">newByte for fc</param>
+        private void corruptOne(FileCorruptor fc, CorruptionType corruptType, int n, byte oldByte, byte newByte)
+        {
+            //run the corrupt
+            if (corruptType == CorruptionType.Insert)
+            {
+                fc.InsertCorrupt(oldByte, newByte, n);
+            }
+            else if (corruptType == CorruptionType.Delete)
+            {
+                fc.DeleteCorrupt(oldByte, n);
+            }
+            else
+            {
+                fc.ReplaceCorrupt(oldByte, newByte, n);
+            }
         }
 
         /// <summary>
@@ -212,10 +237,16 @@ namespace CrossCorrupt
             foreach (DirectoryInfo d in subfolders)
             {
                 //get the file names in the directory
-                FileInfo[] fileNames = d.GetFiles();
-                paths.AddRange(fileNames);
+                try
+                {
+                    FileInfo[] fileNames = d.GetFiles();
+                    paths.AddRange(fileNames);
 
-                paths.AddRange(queueFromRoot(d.FullName));
+                    paths.AddRange(queueFromRoot(d.FullName));
+                }
+                //in the event that a file is protected, catch silently
+                catch (Exception) { }
+                
             }
             return paths.ToArray();
         }

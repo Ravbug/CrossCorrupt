@@ -23,15 +23,20 @@ namespace CrossCorrupt
         private GroupBox FolderCorruptBox;
         private GroupBox FolderScrambleBox;
         private CheckBox EnableFolderScrambleChck;
+        private TextBox FileTypesTxt;
+        private RadioButtonList folderCorruptSelect;
+        private Button RunCorruptBtn;
 
         private string[] sourceFiles;
+        private bool running = false;
+        private CorruptManager cm;
+
 
         public MainForm()
         {
-
             XamlReader.Load(this);
             SelectTypeList.SelectedIndex = 0;
-            CorruptTypeCombo.SelectedIndex = 0;
+            folderCorruptSelect.SelectedIndex = 0;
         }
 
         /// <summary>
@@ -41,28 +46,49 @@ namespace CrossCorrupt
         /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
         {
-            
+            //cancel if already running
+            if (running)
+            {
+                cm.CancelWorker();
+                running = false;
+                RunCorruptBtn.Text = "Run Corrupt";
+            }
+            //otherwise setup and run
             if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
             {
-                CorruptManager cm;
+
                 CorruptManager.CorruptionType type = (CorruptManager.CorruptionType)CorruptTypeCombo.SelectedIndex;
                 if (SelectTypeList.SelectedIndex == 0)
                 {
                     cm = new CorruptManager(sourceFiles, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
-
                 }
                 else
                 {
-                    cm = new CorruptManager(InfileTxt.Text, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
+                    //make filetypes 
+                    HashSet<string> filetypes = new HashSet<string>(FileTypesTxt.Text.Split(','));
+                    if (FileTypesTxt.Text.Trim().Length == 0)
+                    {
+                        filetypes = null;
+                    }
+                    cm = new CorruptManager(InfileTxt.Text, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value,filetypes, folderCorruptSelect.SelectedIndex!=0);
                 }
+                running = true;
 
+                //run the corruptmanager
+                RunCorruptBtn.Text = "Stop";
                 cm.Run((double prog, System.IO.FileInfo f) =>
                 {
+                    //run UI things on the UI thread
                     Application.Instance.Invoke(() =>
                    {
                        MainProg.Value = (int)prog;
-                       Console.WriteLine(prog + " " + f.Name);
-                   });             
+                       if (prog >= 100)
+                       {
+                           RunCorruptBtn.Text = "Run Corrupt";
+                           running = false;
+                       }
+                   });
+                  
                 });
             }
             else

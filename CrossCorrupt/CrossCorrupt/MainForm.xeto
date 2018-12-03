@@ -22,12 +22,12 @@
                   
             </TableRow>
             <TableRow>
-              <Label x:Name="InfileTxt" Text="Input directory"/>
-              <Button Width="20" Text="Choose..." Click="ChooseInputClicked" />
+              <Label x:Name="InfileTxt" Text=""/>
+              <Button Width="20" Text="Choose Input" Click="ChooseInputClicked" />
             </TableRow>
             <TableRow>
-              <Label x:Name="OutfileTxt" Text="Output Location" />
-              <Button Text="Choose..." Click="ChooseOutputClicked"/>
+              <Label x:Name="OutfileTxt" Text="" />
+              <Button Text="Choose Output" Click="ChooseOutputClicked"/>
             </TableRow>
           </TableLayout>
            </GroupBox>
@@ -39,7 +39,7 @@
                   <TableLayout>
                     <TableRow>
                       <Label>Corrupt Every</Label>
-                      <NumericStepper x:Name="nBytesStepper" Value="50"  FormatString="0'th'"></NumericStepper>
+                      <NumericStepper x:Name="nBytesStepper" Value="50" MinValue="1" FormatString="0'th'"></NumericStepper>
                       <Label>byte</Label>
                     </TableRow>
                     <TableRow>
@@ -52,8 +52,8 @@
                     </TableRow>
                     <TableRow>
                       <Label>Operation</Label>
-                      <DropDown x:Name="CorruptTypeCombo">
-                        <ListItem Text="Replace" />
+                      <DropDown x:Name="CorruptTypeCombo" SelectedIndex="0">
+                        <ListItem Text="Replace"/>
                         <ListItem Text="Insert After" />
                         <ListItem Text="Delete" />
                       </DropDown>
@@ -69,7 +69,7 @@
                 <TableLayout>
                   <TableRow>
                     <Label>File Types:</Label>
-                    <TextBox x:Name="FileTypesTxt" Text="exe,png,iso"></TextBox>
+                    <TextBox x:Name="FileTypesTxt" Text=".exe,.png,.iso"></TextBox>
                   </TableRow>
                   <TableRow>
                     <RadioButtonList x:Name="folderCorruptSelect" >
@@ -120,7 +120,7 @@
     <TableRow>
       <!-- The Run Corrput button and progress bar layout -->
         <TableRow>
-          <Button  x:Name="RunCorrupt" Text="Run Corrupt" Click="RunCorrupt" />
+          <Button  x:Name="RunCorruptBtn" Text="Run Corrupt" Click="RunCorrupt" />
           <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
         </TableRow>
     </TableRow>
