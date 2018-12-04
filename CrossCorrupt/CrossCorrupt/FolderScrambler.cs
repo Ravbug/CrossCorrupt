@@ -56,7 +56,8 @@ namespace CrossCorrupt
         /// <summary>
         /// Scrambles the names of the files in the directory
         /// </summary>
-        public void ScrambleNames()
+        /// <param name="progress">method(double) to call on progress updates</param>
+        public void ScrambleNames(Action<double>progress)
         {
             foreach (string extension in fileNames.Keys)
             {
@@ -75,6 +76,15 @@ namespace CrossCorrupt
             }
 
             CleanTempExtensions();
+        }
+
+        /// <summary>
+        /// Un-scrambles the items in a folder. The items must have been scrambled first
+        /// </summary>
+        /// <param name="progress">method(double) to call on progress updates</param>
+        public void RevertScramble(Action<double> progress)
+        {
+            //TODO: insert code which undos the folder scramble
         }
 
         /// <summary>

@@ -3,7 +3,7 @@
 	xmlns="http://schema.picoe.ca/eto.forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="CrossCorrupt"
-	ClientSize="500, 250"
+	ClientSize="500, 320"
 	Padding="0"
 	>
   <TableLayout x:Name="MasterTable">
@@ -35,7 +35,8 @@
         </TabPage>
         <TabPage x:Name="Page2" Text="Corruption Settings">
           <TableLayout><TableRow>
-              <GroupBox Text="General Corruption Settings">      
+              <GroupBox Text="General Corruption Settings"> 
+                <StackLayout>
                   <TableLayout>
                     <TableRow>
                       <Label>Corrupt Every</Label>
@@ -61,8 +62,31 @@
                       <NumericStepper x:Name="oldByteStepper" Value="1"></NumericStepper>
                       <Label>New Byte</Label>
                       <NumericStepper x:Name="newByteStepper"></NumericStepper>
+                    </TableRow>       
+                  </TableLayout>
+                  <TableLayout>
+                     <TableRow>
+                       <CheckBox x:Name="AutoChangeCorruptEveryChck">Auto Change Corrupt Every</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoEveryMinStepper"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoEveryMaxStepper"></NumericStepper>
+                      </TableRow>
+                    <TableRow>
+                       <CheckBox x:Name="AutoChangeStartChck">Auto change Start Byte</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoStartMinStepper"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoStartMaxStepper"></NumericStepper>
+                    </TableRow>
+                    <TableRow>
+                       <CheckBox x:Name="AutoOldByte">Auto change Old Byte</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoOldMinStepper"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoOldMaxStepper"></NumericStepper>
+                    </TableRow>
+                    <TableRow>
+                       <CheckBox x:Name="AutoNewByte">Auto change New Byte</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoNewMinStepper"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoNewMaxStepper"></NumericStepper>  
                     </TableRow>
                   </TableLayout>
+                  </StackLayout>
               </GroupBox>
             </TableRow><TableRow>
               <GroupBox x:Name="FolderCorruptBox" Enabled="False" Text="Folder Corruption Settings">

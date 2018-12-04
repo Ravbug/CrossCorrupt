@@ -170,14 +170,21 @@ namespace CrossCorrupt
         /// <summary>
         /// Run the folder scrambler on a background thread
         /// </summary>
-        /// <param name="Folder">Path to the folder to scramble</param>
-        /// <param name="allExcept">Whether to scramble all types except those in the hashset </param>
-        /// <param name="extensions">HashSet of file extensions to scramble</param>
-        public void ScrambleFolder(string Folder, bool allExcept, HashSet<string> extensions=null)
+        /// <param name="fc">FolderScrambler object to use</param>  
+        /// <param name="revert">Whether to revert the folder back to its original state</param>
+        /// <param name="progress">method(double) to call on progress updates</param>
+        public void ScrambleFolder(FolderScrambler fc,bool revert,Action<double> progress)
         {
             worker = new Thread(() =>
             {
-                //TODO: call FolderScrambler to either scramble or revert here        
+                if (revert)
+                {
+                    fc.RevertScramble(progress);
+                }
+                else
+                {
+                    fc.ScrambleNames(progress);
+                }
             });
             worker.Start();
         }

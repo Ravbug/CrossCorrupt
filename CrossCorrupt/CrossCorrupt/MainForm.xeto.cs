@@ -74,6 +74,8 @@ namespace CrossCorrupt
                 }
                 running = true;
 
+                //TODO: initialize and run the FolderScrambler, if applicable
+
                 //run the corruptmanager
                 RunCorruptBtn.Text = "Stop";
                 cm.Run((double prog, System.IO.FileInfo f) =>
@@ -88,7 +90,6 @@ namespace CrossCorrupt
                            running = false;
                        }
                    });
-                  
                 });
             }
             else
