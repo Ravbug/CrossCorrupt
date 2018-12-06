@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Xaml;
+using System;
 
 namespace CrossCorrupt
 {
@@ -27,16 +28,26 @@ namespace CrossCorrupt
         private RadioButtonList folderCorruptSelect;
         private Button RunCorruptBtn;
 
+        private CheckBox AutoChangeCorruptEveryChck;
+        private CheckBox AutoChangeStartChck;
+        private CheckBox AutoOldByte;
+        private CheckBox AutoNewByte;
+        private NumericStepper AutoEveryMinStepper; private NumericStepper AutoEveryMaxStepper;
+        private NumericStepper AutoStartMinStepper; private NumericStepper AutoStartMaxStepper;
+        private NumericStepper AutoOldMinStepper; private NumericStepper AutoOldMaxStepper;
+        private NumericStepper AutoNewMinStepper; private NumericStepper AutoNewMaxStepper;
+
         private string[] sourceFiles;
         private bool running = false;
         private CorruptManager cm;
-
-
-        public MainForm()
+        private Random random;
+      
+            public MainForm()
         {
             XamlReader.Load(this);
             SelectTypeList.SelectedIndex = 0;
             folderCorruptSelect.SelectedIndex = 0;
+            random = new Random();
         }
 
         /// <summary>
@@ -54,8 +65,10 @@ namespace CrossCorrupt
                 RunCorruptBtn.Text = "Run Corrupt";
             }
             //otherwise setup and run
-            if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
+            else if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
             {
+                //randomize inputs if applicable
+                randomizeInputs();
 
                 CorruptManager.CorruptionType type = (CorruptManager.CorruptionType)CorruptTypeCombo.SelectedIndex;
                 if (SelectTypeList.SelectedIndex == 0)
@@ -95,36 +108,32 @@ namespace CrossCorrupt
             else
             {
                 MessageBox.Show("Please enter an input file.");
-            }
-            
+            }      
         }
 
         /// <summary>
-        /// Called when the Choose Input button is pressed
+        /// randomize the settings if required
         /// </summary>
-        /// <param name="sender">Event sender</param>
-        /// <param name="e">Event args</param>
-        protected void ChooseInputClicked(object sender, EventArgs e)
+        private void randomizeInputs()
         {
-            if (SelectTypeList.SelectedIndex == 0)
+            if ((bool)AutoChangeCorruptEveryChck.Checked)
             {
-                sourceFiles = PromptForFile("Select the file you want to corrupt", true);
-                if (sourceFiles != null)
-                {
-                    string text = "";
-                    text += sourceFiles[0];
-                    if (sourceFiles.Length > 1)
-                    {
-                        text += " and " + (sourceFiles.Length - 1) + " more";
-                    }
-                    InfileTxt.Text = text;
-                }
+                nBytesStepper.Value += random.Next((int)AutoEveryMinStepper.Value,(int)AutoEveryMaxStepper.Value);
             }
-            else
+            if ((bool)AutoChangeStartChck.Checked)
             {
-                InfileTxt.Text = PromptForFolder("Select the folder to corrupt");
+                startByteStepper.Value += random.Next((int)AutoStartMinStepper.Value, (int)AutoStartMaxStepper.Value);
+            }
+            if ((bool)AutoOldByte.Checked)
+            {
+                oldByteStepper.Value += random.Next((int)AutoOldMinStepper.Value, (int)AutoOldMaxStepper.Value);
+            }
+            if ((bool)AutoNewByte.Checked)
+            {
+                newByteStepper.Value += random.Next((int)AutoNewMinStepper.Value, (int)AutoNewMaxStepper.Value);
             }
         }
+
 
         /// <summary>
         /// Called when the Choose Output button is pressed
@@ -189,6 +198,63 @@ namespace CrossCorrupt
                 endBytesStepper.Value = 100;
             }
             endBytesStepper.Enabled = !(bool)autoEndCheck.Checked;
+        }
+
+        /// <summary>
+        /// Called when the Choose Input button is pressed
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Event args</param>
+        protected void ChooseInputClicked(object sender, EventArgs e)
+        {
+            if (SelectTypeList.SelectedIndex == 0)
+            {
+                sourceFiles = PromptForFile("Select the file you want to corrupt", true);
+                if (sourceFiles != null)
+                {
+                    string text = "";
+                    text += sourceFiles[0];
+                    if (sourceFiles.Length > 1)
+                    {
+                        text += " and " + (sourceFiles.Length - 1) + " more";
+                    }
+                    InfileTxt.Text = text;
+                }
+            }
+            else
+            {
+                InfileTxt.Text = PromptForFolder("Select the folder to corrupt");
+            }
+        }
+
+        /// <summary>
+        /// Called when one of the auto changers is clicked
+        /// </summary>
+        /// <param name="sender">Object that fired the event</param>
+        /// <param name="e">EventArgs</param>
+        protected void AutoChangers(object sender, EventArgs e)
+        {
+            CheckBox csender = (CheckBox)sender;
+            if (csender == AutoChangeCorruptEveryChck)
+            {
+                AutoEveryMinStepper.Enabled=!(bool)csender.Checked;
+                AutoEveryMaxStepper.Enabled = !(bool)csender.Checked;
+            }
+            else if (csender == AutoChangeStartChck)
+            {
+                AutoStartMinStepper.Enabled = !(bool)csender.Checked;
+                AutoStartMaxStepper.Enabled = !(bool)csender.Checked;
+            }
+            else if (csender == AutoOldByte)
+            {
+                AutoOldMinStepper.Enabled = !(bool)csender.Checked;
+                AutoOldMaxStepper.Enabled = !(bool)csender.Checked;
+            }
+            else if (csender == AutoNewByte)
+            {
+                AutoNewMinStepper.Enabled = !(bool)csender.Checked;
+                AutoNewMaxStepper.Enabled = !(bool)csender.Checked;
+            }
         }
 
         //when the selection mode changed

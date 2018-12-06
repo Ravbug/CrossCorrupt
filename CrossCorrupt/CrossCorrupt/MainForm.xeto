@@ -66,24 +66,24 @@
                   </TableLayout>
                   <TableLayout>
                      <TableRow>
-                       <CheckBox x:Name="AutoChangeCorruptEveryChck">Auto Change Corrupt Every</CheckBox>
-                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoEveryMinStepper"></NumericStepper>
-                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoEveryMaxStepper"></NumericStepper>
+                       <CheckBox x:Name="AutoChangeCorruptEveryChck" Checked="False" MouseDown="AutoChangers">Auto Change Corrupt Every</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoEveryMinStepper" Value="-30"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoEveryMaxStepper" Value="50"></NumericStepper>
                       </TableRow>
                     <TableRow>
-                       <CheckBox x:Name="AutoChangeStartChck">Auto change Start Byte</CheckBox>
-                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoStartMinStepper"></NumericStepper>
-                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoStartMaxStepper"></NumericStepper>
+                       <CheckBox x:Name="AutoChangeStartChck" Checked="False" MouseDown="AutoChangers">Auto change Start Byte</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoStartMinStepper" Value="-50"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoStartMaxStepper" Value="50"></NumericStepper>
                     </TableRow>
                     <TableRow>
-                       <CheckBox x:Name="AutoOldByte">Auto change Old Byte</CheckBox>
-                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoOldMinStepper"></NumericStepper>
-                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoOldMaxStepper"></NumericStepper>
+                       <CheckBox x:Name="AutoOldByte" Checked="False" MouseDown="AutoChangers">Auto change Old Byte</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoOldMinStepper" Value="-128"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoOldMaxStepper" Value="128"></NumericStepper>
                     </TableRow>
                     <TableRow>
-                       <CheckBox x:Name="AutoNewByte">Auto change New Byte</CheckBox>
-                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoNewMinStepper"></NumericStepper>
-                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoNewMaxStepper"></NumericStepper>  
+                       <CheckBox x:Name="AutoNewByte" Checked="False" MouseDown="AutoChangers">Auto change New Byte</CheckBox>
+                       <Label>Min</Label> <NumericStepper Enabled="False" x:Name="AutoNewMinStepper" Value="-128"></NumericStepper>
+                       <Label>Max</Label> <NumericStepper Enabled="False" x:Name="AutoNewMaxStepper" Value="128"></NumericStepper>  
                     </TableRow>
                   </TableLayout>
                   </StackLayout>
