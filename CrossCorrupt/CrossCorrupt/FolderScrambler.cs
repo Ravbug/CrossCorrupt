@@ -9,9 +9,16 @@ namespace CrossCorrupt
 
         //a dictionary with lists of files keyed by their extensions
         private Dictionary<string, List<string>> fileNames;
+        //a dictionary that holds each swap made during the randomization to enable backtracking
+        private Dictionary<string, string> reverseFileNames;
         private Random random; //random number generator
         private string folderPath;
         private const string tempExtension = ".new"; //temporary extension used to write the scrambled files
+        private DirectoryInfo[] subFolders;
+        private bool includeSubFolders;
+        private bool allExcept;
+        private HashSet<string> extensions;
+        private LinkedList<FolderScrambler> scrambledSubFolders;
 
         /// <summary>
         /// Contructs a FolderScrambler with a path to a folder.
@@ -19,11 +26,19 @@ namespace CrossCorrupt
         /// <param name="folder">Folder to scramble names</param>
         /// <param name="allExcept">True if the extensions given are exclusions</param>
         /// <param name="extensions">A HashSet of all the extensions to look for</param>
-        public FolderScrambler(string folder, bool allExcept, HashSet<string> extensions = null)
+        public FolderScrambler(string folder, bool allExcept, HashSet<string> extensions = null,
+            bool includeSubFolders = false)
         {
+            this.extensions = extensions;
+            this.allExcept = allExcept;
             folderPath = folder;
+            this.includeSubFolders = includeSubFolders;
             random = new Random();
             GenerateNameList(folder, allExcept, extensions);
+            if (includeSubFolders)
+            {
+                FindSubFolders(folder);
+            }
         }
 
         /// <summary>
@@ -51,13 +66,27 @@ namespace CrossCorrupt
                     fileNames[ext].Add(inFiles[i].Name);
                 }
             }
+
+        }
+
+        /// <summary>
+        /// Finds all of the subfolders in the directory and adds them to a list.
+        /// </summary>
+        /// <param name="folder">The folder to look for subfolders within.</param>
+        private void FindSubFolders(string folder)
+        {
+            DirectoryInfo[] allSubFolders = new DirectoryInfo(folder).GetDirectories();
+            if (allSubFolders.Length > 0)
+            {
+                subFolders = allSubFolders;
+            }
         }
 
         /// <summary>
         /// Scrambles the names of the files in the directory
         /// </summary>
         /// <param name="progress">method(double) to call on progress updates</param>
-        public void ScrambleNames(Action<double>progress)
+        public void ScrambleNames(Action<double> progress)
         {
             foreach (string extension in fileNames.Keys)
             {
@@ -71,11 +100,23 @@ namespace CrossCorrupt
                         randomNum = random.Next(0, names.Count);
                     }
                     usedNums.Add(randomNum);
+                    reverseFileNames.Add(names[randomNum], names[i]);
                     File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
                 }
             }
 
             CleanTempExtensions();
+
+            if (includeSubFolders)
+            {
+                foreach (DirectoryInfo directory in subFolders)
+                {
+                    FolderScrambler sc = new FolderScrambler(directory.FullName, allExcept, extensions, includeSubFolders);
+                    scrambledSubFolders.AddLast(sc);
+                    sc.ScrambleNames(progress);//TODO make sure that is how it works
+                }
+            }
+            
         }
 
         /// <summary>
@@ -85,6 +126,23 @@ namespace CrossCorrupt
         public void RevertScramble(Action<double> progress)
         {
             //TODO: insert code which undos the folder scramble
+
+            foreach (string changedFile in reverseFileNames.Keys)
+            {
+                File.Move(CreateFullPath(changedFile), CreateFullPath(reverseFileNames[changedFile]) + tempExtension);
+            }
+
+            CleanTempExtensions();
+
+            if (scrambledSubFolders != null)
+            {
+                foreach (FolderScrambler sc in scrambledSubFolders)
+                {
+                    sc.RevertScramble(progress);
+                }
+            }
+
+            
         }
 
         /// <summary>
