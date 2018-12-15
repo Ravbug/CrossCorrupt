@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Xaml;
-using System;
 
 namespace CrossCorrupt
 {
@@ -24,6 +23,7 @@ namespace CrossCorrupt
         private GroupBox FolderCorruptBox;
         private GroupBox FolderScrambleBox;
         private CheckBox EnableFolderScrambleChck;
+        private CheckBox EnableSubfolderScramble;
         private TextBox FileTypesTxt;
         private RadioButtonList folderCorruptSelect;
         private Button RunCorruptBtn;
@@ -61,8 +61,12 @@ namespace CrossCorrupt
             if (running)
             {
                 cm.CancelWorker();
+                
+                //undo the folderscramble here, if necessary
+                //once that's done, then execute the following
                 running = false;
                 RunCorruptBtn.Text = "Run Corrupt";
+
             }
             //otherwise setup and run
             else if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
@@ -87,9 +91,15 @@ namespace CrossCorrupt
                 }
                 running = true;
 
-                //TODO: initialize and run the FolderScrambler, if applicable
+                //TODO: create and run the FolderScrambler, if applicable
+                if ((bool)EnableFolderScrambleChck.Checked)
+                {
+                    //run the folder scrambler here:
+                    //cm.ScrambleFolder(folderScrambler, false, <Action>);
+                    
+                }
 
-                //run the corruptmanager
+                //run the corruptmanager (need to pause this until after the FolderScramble finishes)
                 RunCorruptBtn.Text = "Stop";
                 cm.Run((double prog, System.IO.FileInfo f) =>
                 {
@@ -101,6 +111,12 @@ namespace CrossCorrupt
                        {
                            RunCorruptBtn.Text = "Run Corrupt";
                            running = false;
+
+                           //undo the folderscramble here
+                           if ((bool)EnableFolderScrambleChck.Checked)
+                           {
+                               //cm.ScrambleFolder(folderScrambler, true, <Action>)
+                           }
                        }
                    });
                 });
