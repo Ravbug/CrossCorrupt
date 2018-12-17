@@ -9,15 +9,26 @@ namespace CrossCorrupt
 
         //a dictionary with lists of files keyed by their extensions
         private Dictionary<string, List<string>> fileNames;
+
         //a dictionary that holds each swap made during the randomization to enable backtracking
         private Dictionary<string, string> reverseFileNames;
-        private Random random; //random number generator
+
+        //random number generator
+        private Random random;
+
         private string folderPath;
-        private const string tempExtension = ".new"; //temporary extension used to write the scrambled files
+
+        //temporary extension used to write the scrambled files
+        private const string tempExtension = ".new";
+
         private DirectoryInfo[] subFolders;
+
         private bool includeSubFolders;
+
         private bool allExcept;
+
         private HashSet<string> extensions;
+
         private LinkedList<FolderScrambler> scrambledSubFolders;
 
         /// <summary>
@@ -100,7 +111,8 @@ namespace CrossCorrupt
                         randomNum = random.Next(0, names.Count);
                     }
                     usedNums.Add(randomNum);
-                    reverseFileNames.Add(names[randomNum], names[i]);
+                    //reverseFileNames.Add(names[randomNum], names[i]);
+                    //Turns off the reverse scrambling ability
                     File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
                 }
             }
@@ -116,7 +128,7 @@ namespace CrossCorrupt
                     sc.ScrambleNames(progress);//TODO make sure that is how it works
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -142,7 +154,7 @@ namespace CrossCorrupt
                 }
             }
 
-            
+
         }
 
         /// <summary>
