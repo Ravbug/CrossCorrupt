@@ -61,9 +61,7 @@ namespace CrossCorrupt
             if (running)
             {
                 cm.CancelWorker();
-                
-                //undo the folderscramble here, if necessary
-                //once that's done, then execute the following
+
                 running = false;
                 RunCorruptBtn.Text = "Run Corrupt";
 
@@ -91,15 +89,7 @@ namespace CrossCorrupt
                 }
                 running = true;
 
-                //TODO: create and run the FolderScrambler, if applicable
-                if ((bool)EnableFolderScrambleChck.Checked)
-                {
-                    //run the folder scrambler here:
-                    //cm.ScrambleFolder(folderScrambler, false, <Action>);
-                    
-                }
-
-                //run the corruptmanager (need to pause this until after the FolderScramble finishes)
+                //run the corruptmanager
                 RunCorruptBtn.Text = "Stop";
                 cm.Run((double prog, System.IO.FileInfo f) =>
                 {
@@ -109,13 +99,21 @@ namespace CrossCorrupt
                        MainProg.Value = (int)prog;
                        if (prog >= 100)
                        {
-                           RunCorruptBtn.Text = "Run Corrupt";
-                           running = false;
 
-                           //undo the folderscramble here
+                           //TODO: create and run the FolderScrambler, if applicable
                            if ((bool)EnableFolderScrambleChck.Checked)
                            {
-                               //cm.ScrambleFolder(folderScrambler, true, <Action>)
+                               //run the folder scrambler here:
+                               //will need to translate path to the corrupted destination
+                               //cm.ScrambleFolder(folderScrambler, false, <Action>);
+                               //set running to false when finished
+                               RunCorruptBtn.Text = "Run Corrupt";
+                               running = false;
+                           }
+                           else
+                           {
+                               running = false;
+                               RunCorruptBtn.Text = "Run Corrupt";
                            }
                        }
                    });
