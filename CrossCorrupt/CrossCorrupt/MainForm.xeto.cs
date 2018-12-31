@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
@@ -27,6 +28,8 @@ namespace CrossCorrupt
         private TextBox FileTypesTxt;
         private RadioButtonList folderCorruptSelect;
         private Button RunCorruptBtn;
+        private CheckBox FolderScrambleInvertChck;
+        private TextArea FolderScrambleTypesTxt;
 
         private CheckBox AutoChangeCorruptEveryChck;
         private CheckBox AutoChangeStartChck;
@@ -36,6 +39,8 @@ namespace CrossCorrupt
         private NumericStepper AutoStartMinStepper; private NumericStepper AutoStartMaxStepper;
         private NumericStepper AutoOldMinStepper; private NumericStepper AutoOldMaxStepper;
         private NumericStepper AutoNewMinStepper; private NumericStepper AutoNewMaxStepper;
+
+        private TextBox FolderScrambleRoot;
 
         private string[] sourceFiles;
         private bool running = false;
@@ -57,6 +62,8 @@ namespace CrossCorrupt
         /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
         {
+            runFolderScramble(InFileTxt.Text,FolderScrambleRoot.Text,OutfileTxt.Text);
+            
             //cancel if already running
             if (running)
             {
@@ -179,6 +186,24 @@ namespace CrossCorrupt
             }
         }
 
+        private void runFolderScramble(string inputRoot, string scrambleRoot,string destinationRoot)
+        {
+          
+        
+
+            //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the destinationRoot
+            string newPath = destinationRoot;
+
+            //build filetypes hashset
+            HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
+
+            FolderScrambler fs = new FolderScrambler(newPath,(bool)FolderScrambleInvertChck.Checked,fileTypes,(bool)EnableSubfolderScramble.Checked);
+            fs.ScrambleNames((double prog) =>
+            {
+                //progress updates go here
+            });
+        }
+
         /// <summary>
         /// Prompts the user to select a folder
         /// </summary>
@@ -212,6 +237,20 @@ namespace CrossCorrupt
                 endBytesStepper.Value = 100;
             }
             endBytesStepper.Enabled = !(bool)autoEndCheck.Checked;
+        }
+
+        /// <summary>
+        /// Called when Choose Folder Scramble Root button is clicked
+        /// </summary>
+        /// <param name="sender">CPointer to caller</param>
+        /// <param name="e">Event arguments</param>
+        protected void chooseFolderScrambleFolder(object sender, EventArgs e)
+        {
+            string path = PromptForFolder("Select the folder to scramble items");
+            if (path != null)
+            {
+                FolderScrambleRoot.Text = path;
+            }
         }
 
         /// <summary>

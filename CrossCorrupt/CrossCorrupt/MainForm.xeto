@@ -106,9 +106,6 @@
                               CheckedChanged="enableFolderScrambleStateChanged"
                               ToolTip="Scrambles the names of the files in a folder. See &quot;Additional Options&quot;"
                               >Enable Folder Scramble</CheckBox>
-                    <CheckBox x:Name="EnableSubfolderScramble"
-                              ToolTip="Check to scramble the names within subfolders."
-                              >Scramble Subfolders</CheckBox>
                   </TableRow>
                 </TableLayout>
               </GroupBox>
@@ -125,8 +122,8 @@
                     <Label>Set Folders</Label>
                   </TableRow>
                   <TableRow>
-                    <TextBox PlaceholderText="Path to folder"></TextBox>
-                    <Button Text="Choose"></Button>
+                    <TextBox x:Name="FolderScrambleRoot" PlaceholderText="Path to folder"></TextBox>
+                    <Button Click="chooseFolderScrambleFolder" Text="Choose"></Button>
                   </TableRow>
                   <TableRow>
                     <Label>Set file extensions to corrupt</Label>
@@ -136,6 +133,10 @@
                   </TableRow>
                   <TableRow>
                     <CheckBox x:Name="FolderScrambleInvertChk" Text="Scramble all except these types"></CheckBox>
+                  </TableRow>
+                  <TableRow>
+                    <CheckBox x:Name="EnableSubfolderScramble"
+                              ToolTip="Check to scramble the names within subfolders.">Scramble Subfolders</CheckBox>
                   </TableRow>
                 </TableLayout>
               </GroupBox>
