@@ -61,9 +61,7 @@ namespace CrossCorrupt
         /// <param name="sender">Object that raised the event</param>
         /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
-        {
-            runFolderScramble(InFileTxt.Text,FolderScrambleRoot.Text,OutfileTxt.Text);
-            
+        {            
             //cancel if already running
             if (running)
             {
