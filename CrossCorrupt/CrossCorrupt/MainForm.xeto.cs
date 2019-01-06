@@ -12,6 +12,9 @@ namespace CrossCorrupt
         //define UI elements up here, with identical name to one set in ID property (ETO doesn't auto generate these like WPF does)
         private Label InfileTxt;
         private Label OutfileTxt;
+        private CheckBox IncludeRootFolder;
+        private string RootFolder;
+        private Button ChooseRootButton;
         private ProgressBar MainProg;
         private RadioButtonList SelectTypeList;
         private NumericStepper nBytesStepper;
@@ -62,7 +65,7 @@ namespace CrossCorrupt
         /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
         {
-            runFolderScramble(InFileTxt.Text,FolderScrambleRoot.Text,OutfileTxt.Text);
+            runFolderScramble(InfileTxt.Text,FolderScrambleRoot.Text,OutfileTxt.Text);
             
             //cancel if already running
             if (running)
@@ -281,6 +284,16 @@ namespace CrossCorrupt
         }
 
         /// <summary>
+        /// Changes the RootFolder string to hold the selected folder
+        /// </summary>
+        /// <param name="sender">Object that fired the event</param>
+        /// <param name="e">EventArgs</param>
+        protected void ChooseRootClicked(object sender, EventArgs e)
+        {
+            RootFolder = PromptForFolder("Select the Root folder");
+        }
+
+        /// <summary>
         /// Called when one of the auto changers is clicked
         /// </summary>
         /// <param name="sender">Object that fired the event</param>
@@ -320,12 +333,21 @@ namespace CrossCorrupt
                 {
                     FolderScrambleBox.Enabled = true;
                 }
+                IncludeRootFolder.Visible = true;
+                ChooseRootButton.Visible = true;
             }
             else
             {
                 FolderCorruptBox.Enabled = false;
                 FolderScrambleBox.Enabled = false;
+                IncludeRootFolder.Visible = false;
+                ChooseRootButton.Visible = false;
             }
+        }
+
+        protected void RootCheckChanged(object sender, EventArgs e)
+        {
+            ChooseRootButton.Enabled = (bool)IncludeRootFolder.Checked;
         }
 
         //when folder scramble is enabled or disabled
