@@ -61,7 +61,7 @@ namespace CrossCorrupt
         /// <param name="sender">Object that raised the event</param>
         /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
-        {            
+        {
             //cancel if already running
             if (running)
             {
@@ -184,13 +184,27 @@ namespace CrossCorrupt
             }
         }
 
+        /// <summary>
+        /// Runs the folderscrambler on a background thread
+        /// </summary>
+        /// <param name="inputRoot">Path to the whole corruption task to corupt</param>
+        /// <param name="scrambleRoot">Path to just the rootfolder of the folder scramble task</param>
+        /// <param name="destinationRoot">Root path where the corrupt job will be written</param>
         private void runFolderScramble(string inputRoot, string scrambleRoot,string destinationRoot)
         {
-          
-        
+            int index = scrambleRoot.IndexOf(inputRoot);
+            if (index < 0)
+            {
+                MessageBox.Show("Folder Scramble directory is not a subfolder of the parent directory. Aborted.");
+                return;
+            }
 
-            //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the destinationRoot
-            string newPath = destinationRoot;
+            //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the inputRoot
+            var split = inputRoot.Split(Path.DirectorySeparatorChar);
+            string newPath = destinationRoot + split[split.Length-1] + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
+            //fix directoryseparatorchar duplicating characters
+            newPath = newPath.Replace("//","/");
+            newPath = newPath.Replace("\\\\", "\\");
 
             //build filetypes hashset
             HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
@@ -199,6 +213,16 @@ namespace CrossCorrupt
             fs.ScrambleNames((double prog) =>
             {
                 //progress updates go here
+                //run UI things on the UI thread
+                Application.Instance.Invoke(() =>
+                {
+                    MainProg.Value = (int)prog;
+                    if (prog >= 100)
+                    {    
+                        RunCorruptBtn.Text = "Run Corrupt";
+                        running = false;                     
+                    }
+                });
             });
         }
 
