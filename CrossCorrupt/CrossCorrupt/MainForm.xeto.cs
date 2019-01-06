@@ -109,11 +109,8 @@ namespace CrossCorrupt
                            if ((bool)EnableFolderScrambleChck.Checked)
                            {
                                //run the folder scrambler here:
-                               //will need to translate path to the corrupted destination
-                               //cm.ScrambleFolder(folderScrambler, false, <Action>);
-                               //set running to false when finished
-                               RunCorruptBtn.Text = "Run Corrupt";
-                               running = false;
+                               runFolderScramble(InfileTxt.Text, FolderScrambleRoot.Text, OutfileTxt.Text);
+                               RunCorruptBtn.Text = "Scrambling Folder";
                            }
                            else
                            {
