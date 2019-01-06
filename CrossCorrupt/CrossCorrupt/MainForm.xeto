@@ -29,10 +29,6 @@
               <Label x:Name="OutfileTxt" Text="" />
               <Button Text="Choose Output" Click="ChooseOutputClicked"/>
             </TableRow>
-            <TableRow>
-              <CheckBox x:Name="IncludeRootFolder" Text="Include Root Folder" Visible="False" CheckedChanged="RootCheckChanged" />
-              <Button x:Name="ChooseRootButton" Text="Choose Root" Click="ChooseRootClicked" Enabled="False" Visible="False" />
-            </TableRow>
           </TableLayout>
            </GroupBox>
           <!-- Page 2 of the tabs -->
