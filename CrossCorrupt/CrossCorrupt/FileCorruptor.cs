@@ -90,7 +90,7 @@ namespace CrossCorrupt
         {
             var file = readFile(inFile);
 
-            for (int i = 0; i < endByte; i++)
+            for (int i = 0; i < endByte && i < file.Count; i++)
             {
                 if (i % n == 0 && file[i] == old)
                 {
@@ -109,7 +109,7 @@ namespace CrossCorrupt
         {
             var file = readFile(inFile);
 
-            for (int i = 0; i < endByte; i++)
+            for (int i = 0; i < endByte && i < file.Count; i++)
             {
                 if (i % n == 0 && file[i] == insertAfter)
                 {

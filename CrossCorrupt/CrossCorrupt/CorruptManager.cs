@@ -161,6 +161,9 @@ namespace CrossCorrupt
                         }
                     }
                 }
+                //invoke 100% progress when complete
+                callback?.Invoke(100, null);
+
 
                 //if overwrite is true, then instead of copying files, leave them where they are
             });

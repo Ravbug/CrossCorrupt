@@ -3,7 +3,7 @@
 	xmlns="http://schema.picoe.ca/eto.forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="CrossCorrupt"
-	ClientSize="500, 320"
+	ClientSize="600, 370"
 	Padding="0"
 	>
   <TableLayout x:Name="MasterTable">

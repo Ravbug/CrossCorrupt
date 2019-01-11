@@ -90,7 +90,13 @@ namespace CrossCorrupt
                     {
                         filetypes = null;
                     }
-                    cm = new CorruptManager(InfileTxt.Text, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value,filetypes, folderCorruptSelect.SelectedIndex!=0);
+
+                    //determine the output folder
+                    var asArray = InfileTxt.Text.Split(Path.DirectorySeparatorChar);
+                    var outfile = OutfileTxt.Text + Path.DirectorySeparatorChar + asArray[asArray.Length-1];
+                    //fix any duplicating slashes (windows only)
+                    outfile = outfile.Replace("\\\\", "\\");
+                    cm = new CorruptManager(InfileTxt.Text, outfile, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value,filetypes, folderCorruptSelect.SelectedIndex!=0);
                 }
                 running = true;
 
@@ -172,8 +178,13 @@ namespace CrossCorrupt
             dialog.MultiSelect = multiSelect;
             dialog.Title = prompt;
             if (dialog.ShowDialog(this) == DialogResult.Ok)
-            {        
-                return (string[])dialog.Filenames;
+            {
+                List<string> files = new List<string>();
+                foreach (string file in dialog.Filenames)
+                {
+                    files.Add(file);
+                }
+                return files.ToArray();
             }
             else
             {
