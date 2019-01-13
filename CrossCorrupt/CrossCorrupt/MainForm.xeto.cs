@@ -28,7 +28,7 @@ namespace CrossCorrupt
         private TextBox FileTypesTxt;
         private RadioButtonList folderCorruptSelect;
         private Button RunCorruptBtn;
-        private CheckBox FolderScrambleInvertChck;
+        private CheckBox FolderScrambleInvertChk;
         private TextArea FolderScrambleTypesTxt;
 
         private CheckBox AutoChangeCorruptEveryChck;
@@ -210,7 +210,7 @@ namespace CrossCorrupt
 
             //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the inputRoot
             var split = inputRoot.Split(Path.DirectorySeparatorChar);
-            string newPath = destinationRoot + split[split.Length-1] + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
+            string newPath = destinationRoot + Path.DirectorySeparatorChar + split[split.Length-1] + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
             //fix directoryseparatorchar duplicating characters
             newPath = newPath.Replace("//","/");
             newPath = newPath.Replace("\\\\", "\\");
@@ -218,7 +218,7 @@ namespace CrossCorrupt
             //build filetypes hashset
             HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
 
-            FolderScrambler fs = new FolderScrambler(newPath,(bool)FolderScrambleInvertChck.Checked,fileTypes,(bool)EnableSubfolderScramble.Checked);
+            FolderScrambler fs = new FolderScrambler(newPath,(bool)FolderScrambleInvertChk.Checked,fileTypes,(bool)EnableSubfolderScramble.Checked);
             fs.ScrambleNames((double prog) =>
             {
                 //progress updates go here
