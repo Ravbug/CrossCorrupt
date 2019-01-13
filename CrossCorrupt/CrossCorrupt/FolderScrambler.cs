@@ -114,7 +114,12 @@ namespace CrossCorrupt
                     //reverseFileNames.Add(names[randomNum], names[i]);
                     //Turns off the reverse scrambling ability
                     File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
+                   
+                     //update progress
+                    progress?.Invoke((double)i/names.Count*100);
                 }
+                //ensure progress is complete
+                progress?.Invoke(100);
             }
 
             CleanTempExtensions();

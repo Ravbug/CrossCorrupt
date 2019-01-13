@@ -10,8 +10,8 @@ namespace CrossCorrupt
     public class MainForm : Form
     {
         //define UI elements up here, with identical name to one set in ID property (ETO doesn't auto generate these like WPF does)
-        private Label InfileTxt;
-        private Label OutfileTxt;
+        private TextBox InfileTxt;
+        private TextBox OutfileTxt;
         private ProgressBar MainProg;
         private RadioButtonList SelectTypeList;
         private NumericStepper nBytesStepper;
@@ -122,6 +122,7 @@ namespace CrossCorrupt
                            {
                                running = false;
                                RunCorruptBtn.Text = "Run Corrupt";
+                               MessageBox.Show("Corruption complete!");
                            }
                        }
                    });
@@ -228,7 +229,8 @@ namespace CrossCorrupt
                     if (prog >= 100)
                     {    
                         RunCorruptBtn.Text = "Run Corrupt";
-                        running = false;                     
+                        running = false;
+                        MessageBox.Show("Corruption complete!");               
                     }
                 });
             });
@@ -356,6 +358,8 @@ namespace CrossCorrupt
                 FolderCorruptBox.Enabled = false;
                 FolderScrambleBox.Enabled = false;
             }
+            //prevent crashing due to user changing mode without changing files
+            InfileTxt.Text = "";
         }
 
         //when folder scramble is enabled or disabled

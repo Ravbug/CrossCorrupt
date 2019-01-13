@@ -5,6 +5,7 @@
 	Title="CrossCorrupt"
 	ClientSize="600, 370"
 	Padding="0"
+    Resizable="false"
 	>
   <TableLayout x:Name="MasterTable">
     <TableRow>
@@ -22,11 +23,11 @@
                   
             </TableRow>
             <TableRow>
-              <Label x:Name="InfileTxt" Text=""/>
+              <TextBox ReadOnly="true" PlaceholderText="Select input file(s)" x:Name="InfileTxt" Text=""/>
               <Button Width="20" Text="Choose Input" Click="ChooseInputClicked" />
             </TableRow>
             <TableRow>
-              <Label x:Name="OutfileTxt" Text="" />
+              <TextBox ReadOnly="true" PlaceholderText="Select output directory" x:Name="OutfileTxt" Text="" />
               <Button Text="Choose Output" Click="ChooseOutputClicked"/>
             </TableRow>
           </TableLayout>
