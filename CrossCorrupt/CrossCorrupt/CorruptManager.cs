@@ -141,7 +141,7 @@ namespace CrossCorrupt
                             //progress update
                             if (i == queue.Length - 1 || i % 10 == 0)
                             {
-                                callback?.Invoke((double)(i+1) / queue.Length * 100, f);
+                                callback?.Invoke((double)(i) / queue.Length * 100, f);
                             }
 
                         }

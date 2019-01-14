@@ -42,13 +42,13 @@ namespace CrossCorrupt
         {
             this.extensions = extensions;
             this.allExcept = allExcept;
-            if (folder.EndsWith("\\"))
+            if (folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 folderPath = folder;
             }
             else
             {
-                folderPath = folder + "\\";
+                folderPath = folder + Path.DirectorySeparatorChar;
             }
             this.includeSubFolders = includeSubFolders;
             random = new Random();
@@ -109,8 +109,14 @@ namespace CrossCorrupt
         /// Scrambles the names of the files in the directory
         /// </summary>
         /// <param name="progress">method(double) to call on progress updates</param>
-        public void ScrambleNames(Action<double> progress)
+        public void ScrambleNames(Action<double> progress=null)
         {
+            int prog = 0;
+            int max = fileNames.Keys.Count;
+            if (includeSubFolders)
+            {
+                max += subFolders.Length;
+            }
             foreach (string extension in fileNames.Keys)
             {
                 List<string> names = fileNames[extension];
@@ -125,12 +131,10 @@ namespace CrossCorrupt
                     //reverseFileNames.Add(names[randomNum], names[i]);
                     //Turns off the reverse scrambling ability
                     File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
-                   
-                     //update progress
-                    progress?.Invoke((double)i/names.Count*100);
                 }
-                //ensure progress is complete
-                progress?.Invoke(100);
+                prog++;
+                //update progress
+                progress?.Invoke(prog / max);
             }
 
             CleanTempExtensions();
@@ -141,10 +145,13 @@ namespace CrossCorrupt
                 {
                     FolderScrambler sc = new FolderScrambler(directory.FullName, allExcept, extensions, includeSubFolders);
                     //scrambledSubFolders.AddLast(sc); For reversability
-                    sc.ScrambleNames(progress);//TODO make sure that is how it works
+                    sc.ScrambleNames(null);//TODO make sure that is how it works
+                    prog++;
+                    progress?.Invoke(prog/max);
                 }
             }
-
+            //ensure progress is complete
+            progress?.Invoke(100);
         }
 
         /// <summary>

@@ -109,8 +109,7 @@ namespace CrossCorrupt
                    {
                        MainProg.Value = (int)prog;
                        if (prog >= 100)
-                       {
-
+                      {
                            //TODO: create and run the FolderScrambler, if applicable
                            if ((bool)EnableFolderScrambleChck.Checked)
                            {
@@ -205,6 +204,7 @@ namespace CrossCorrupt
             if (index < 0)
             {
                 MessageBox.Show("Folder Scramble directory is not a subfolder of the parent directory. Aborted.");
+                RunCorruptBtn.Text = "Run Corrupt"; 
                 return;
             }
 
