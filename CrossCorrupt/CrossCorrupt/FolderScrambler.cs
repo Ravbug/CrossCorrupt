@@ -42,9 +42,17 @@ namespace CrossCorrupt
         {
             this.extensions = extensions;
             this.allExcept = allExcept;
-            folderPath = folder;
+            if (folder.EndsWith("\\"))
+            {
+                folderPath = folder;
+            }
+            else
+            {
+                folderPath = folder + "\\";
+            }
             this.includeSubFolders = includeSubFolders;
             random = new Random();
+            fileNames = new Dictionary<string, List<string>>();
             GenerateNameList(folder, allExcept, extensions);
             if (includeSubFolders)
             {
@@ -91,6 +99,10 @@ namespace CrossCorrupt
             {
                 subFolders = allSubFolders;
             }
+            if (subFolders == null)
+            {
+                includeSubFolders = false;
+            }
         }
 
         /// <summary>
@@ -102,15 +114,14 @@ namespace CrossCorrupt
             foreach (string extension in fileNames.Keys)
             {
                 List<string> names = fileNames[extension];
-                List<int> usedNums = new List<int>(names.Count);
-                int randomNum = random.Next(0, names.Count);
-                for (int i = 0; i < names.Count; i++)
+
+                List<int> randomNumbers = GetRandomNumbers(names.Count);
+
+                int randomNum;
+
+                for (int i = 0; i < names.Count && i < randomNumbers.Count; i++)
                 {
-                    while (!usedNums.Contains(randomNum))
-                    {
-                        randomNum = random.Next(0, names.Count);
-                    }
-                    usedNums.Add(randomNum);
+                    randomNum = randomNumbers[i];
                     //reverseFileNames.Add(names[randomNum], names[i]);
                     //Turns off the reverse scrambling ability
                     File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
@@ -129,7 +140,7 @@ namespace CrossCorrupt
                 foreach (DirectoryInfo directory in subFolders)
                 {
                     FolderScrambler sc = new FolderScrambler(directory.FullName, allExcept, extensions, includeSubFolders);
-                    scrambledSubFolders.AddLast(sc);
+                    //scrambledSubFolders.AddLast(sc); For reversability
                     sc.ScrambleNames(progress);//TODO make sure that is how it works
                 }
             }
@@ -173,7 +184,7 @@ namespace CrossCorrupt
             {
                 if (file.Extension == tempExtension)
                 {
-                    File.Move(file.FullName, CreateFullPath(file.Name));
+                    File.Move(file.FullName, CreateFullPath(file.Name.Substring(0, file.Name.Length - tempExtension.Length)));
                 }
             }
         }
@@ -186,6 +197,29 @@ namespace CrossCorrupt
         private string CreateFullPath(string name)
         {
             return folderPath + name;
+        }
+
+        private List<int> GetRandomNumbers(int range)
+        {
+            //create an array of all ints in the range
+            List<int> numbersInOrder = new List<int>(range);
+            for (int i = 0; i < range; i++)
+            {
+                numbersInOrder.Add (i);
+            }
+
+            //randomize the array
+            Random rand = new Random();
+            List<int> randomizedNumbers = new List<int>(range);
+            int randomIndex;
+            while (numbersInOrder.Count > 0)
+            {
+                randomIndex = rand.Next(0, numbersInOrder.Count);
+                randomizedNumbers.Add(numbersInOrder[randomIndex]);
+                numbersInOrder.RemoveAt(randomIndex);
+            }
+
+            return randomizedNumbers;
         }
     }
 }
