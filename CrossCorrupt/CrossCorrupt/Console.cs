@@ -25,7 +25,11 @@ namespace CrossCorrupt
 
         public static void Log(string text,LogTypes type = LogTypes.Debug)
         {
-            outputArea.Text += "[" + logFormatMap[type] + "] " + text + "\n"; 
+            //run always on UI thread
+            Application.Instance.Invoke(() =>
+            {
+                outputArea.Text += "[" + logFormatMap[type] + "] " + text + "\n";
+            });
         }
     }
 }
