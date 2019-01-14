@@ -74,6 +74,7 @@ namespace CrossCorrupt
         public CorruptManager(string rootFolder, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte oByte, byte nByte=0, HashSet<string> filetypes=null, bool inverttypes=false) : this(new string[0], destination, mode, sByte, eByte, nVal, oByte, nByte)
         {
             //calls the above constructor before executing this
+            Console.Log("CorruptManager: Initializing corrupt manager in batch-folder mode", Console.LogTypes.Info);
             fileTypes = filetypes;
             //build the queue of files
             rootfolder = rootFolder;
@@ -88,11 +89,13 @@ namespace CrossCorrupt
         public void Run(Action<double, FileInfo> callback = null)
         {
             //initialize the background worker
+            Console.Log("CorruptManager: Initializing background worker");
             worker = new Thread(() => {
                 FileCorruptor fc = new FileCorruptor(null,null,startByte,endByte);
                 //corrupt all the files, or corrupt only certain types?
                 if (fileTypes == null)
                 {
+                    Console.Log("CorruptManager: Using predefined queue, beginning corruption");
                     //corrupt each file in the list
                     for (int i = 0; i < queue.Length; i++)
                     {
@@ -123,7 +126,9 @@ namespace CrossCorrupt
                 }
                 else
                 {
-                    for(int i = 0; i <queue.Length; i++)
+                    Console.Log("CorruptManager: Using queue hashset rules, beginning corruption");
+
+                    for (int i = 0; i <queue.Length; i++)
                     {
                         FileInfo f = queue[i];
                         //corrupt if file type is compatible
@@ -182,10 +187,12 @@ namespace CrossCorrupt
             {
                 if (revert)
                 {
+                    Console.Log("CorruptManager: Starting Folder Scramble Revert on background thread",Console.LogTypes.Warning);
                     fc.RevertScramble(progress);
                 }
                 else
                 {
+                    Console.Log("CorruptManager: Starting Folder Scramble on background thread");
                     fc.ScrambleNames(progress);
                 }
             });
@@ -197,6 +204,7 @@ namespace CrossCorrupt
         /// </summary>
         public void CancelWorker()
         {
+            Console.Log("CorruptManager: aborting background worker",Console.LogTypes.Warning);
             worker.Abort();
         }
 
@@ -258,6 +266,7 @@ namespace CrossCorrupt
                 catch (Exception) { }
                 
             }
+            Console.Log("CorruptManager: Queued " + paths.ToArray().Length + " files for corruption");
             return paths.ToArray();
         }
     }

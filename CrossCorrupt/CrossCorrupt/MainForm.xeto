@@ -13,25 +13,35 @@
         <!-- Page 1 of the tabs -->
         <TabPage x:Name="Page1" Text="Files and Folders">
           <!-- Page 1 Main Table -->
+          <TableLayout>
+          <TableRow>
           <GroupBox Text="Choose what to corrpt">
           <TableLayout x:Name="Page1Grid" >
             <TableRow>    
                 <RadioButtonList x:Name="SelectTypeList" SelectedValueChanged="corruptTypeClicked">
                 <ListItem Text="Select individual files"/>
                 <ListItem Text="Select Folders"/>
-              </RadioButtonList>
-                  
+              </RadioButtonList>                
             </TableRow>
             <TableRow>
-              <TextBox ReadOnly="true" PlaceholderText="Select input file(s)" x:Name="InfileTxt" Text=""/>
-              <Button Width="20" Text="Choose Input" Click="ChooseInputClicked" />
-            </TableRow>
-            <TableRow>
-              <TextBox ReadOnly="true" PlaceholderText="Select output directory" x:Name="OutfileTxt" Text="" />
-              <Button Text="Choose Output" Click="ChooseOutputClicked"/>
+               <TableLayout><TableRow>
+                    <Button Width="20" Text="Choose Input" Click="ChooseInputClicked" />
+                    <TextBox ReadOnly="true" PlaceholderText="Select input file(s)" x:Name="InfileTxt" Text=""/>
+               </TableRow><TableRow>
+                     <Button Text="Choose Output" Click="ChooseOutputClicked"/>
+                     <TextBox ReadOnly="true" PlaceholderText="Select output directory" x:Name="OutfileTxt" Text="" />
+               </TableRow></TableLayout>            
             </TableRow>
           </TableLayout>
            </GroupBox>
+           </TableRow>
+           <TableRow>
+                <Label Text="Console output"></Label>
+           </TableRow>
+           <TableRow>
+                <TextArea x:Name="ConsoleLog" ReadOnly="true"></TextArea>
+           </TableRow>
+          </TableLayout>
           <!-- Page 2 of the tabs -->
         </TabPage>
         <TabPage x:Name="Page2" Text="Corruption Settings">
@@ -93,8 +103,10 @@
               <GroupBox x:Name="FolderCorruptBox" Enabled="False" Text="Folder Corruption Settings">
                 <TableLayout>
                   <TableRow>
-                    <Label>File Types:</Label>
-                    <TextBox x:Name="FileTypesTxt" Text=".exe,.png,.iso"></TextBox>
+                    <TableLayout><TableRow>
+                        <Label>File Types:</Label>
+                        <TextBox x:Name="FileTypesTxt" Text=".exe,.png,.iso"></TextBox>
+                    </TableRow></TableLayout>
                   </TableRow>
                   <TableRow>
                     <RadioButtonList x:Name="folderCorruptSelect" >
@@ -123,19 +135,17 @@
                     <Label>Set Folders</Label>
                   </TableRow>
                   <TableRow>
-                    <TextBox x:Name="FolderScrambleRoot" PlaceholderText="Path to folder"></TextBox>
                     <Button Click="chooseFolderScrambleFolder" Text="Choose"></Button>
+                    <TextBox x:Name="FolderScrambleRoot" ReadOnly="true" PlaceholderText="Path to folder"></TextBox>
                   </TableRow>
                   <TableRow>
-                    <Label>Set file extensions to corrupt</Label>
-                  </TableRow>
-                  <TableRow>
-                    <TextArea x:Name="FolderScrambleTypesTxt" Text=".png, .txt, .jpg" ></TextArea>
-                  </TableRow>
+                        <Label>Set file extensions to corrupt</Label>
+                    </TableRow>
+                    <TableRow>
+                        <TextArea x:Name="FolderScrambleTypesTxt" Text=".png, .txt, .jpg" ></TextArea>
+                    </TableRow>
                   <TableRow>
                     <CheckBox x:Name="FolderScrambleInvertChk" Text="Scramble all except these types"></CheckBox>
-                  </TableRow>
-                  <TableRow>
                     <CheckBox x:Name="EnableSubfolderScramble"
                               ToolTip="Check to scramble the names within subfolders.">Scramble Subfolders</CheckBox>
                   </TableRow>

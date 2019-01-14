@@ -41,6 +41,7 @@ namespace CrossCorrupt
         private NumericStepper AutoNewMinStepper; private NumericStepper AutoNewMaxStepper;
 
         private TextBox FolderScrambleRoot;
+        private TextArea ConsoleLog;
 
         private string[] sourceFiles;
         private bool running = false;
@@ -50,6 +51,9 @@ namespace CrossCorrupt
             public MainForm()
         {
             XamlReader.Load(this);
+            //initialize the output area
+            Console.outputArea = ConsoleLog;
+
             SelectTypeList.SelectedIndex = 0;
             folderCorruptSelect.SelectedIndex = 0;
             random = new Random();
@@ -69,11 +73,13 @@ namespace CrossCorrupt
 
                 running = false;
                 RunCorruptBtn.Text = "Run Corrupt";
+                Console.Log("UI: User aborted corruption",Console.LogTypes.Error);
 
             }
             //otherwise setup and run
             else if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
             {
+                Console.Log("UI: Initializing corruption backend",Console.LogTypes.Info);
                 //randomize inputs if applicable
                 randomizeInputs();
 
@@ -90,7 +96,7 @@ namespace CrossCorrupt
                     {
                         filetypes = null;
                     }
-
+                    Console.Log("UI: Setting filetypes = " + FileTypesTxt.Text.Trim(), Console.LogTypes.Info);
                     //determine the output folder
                     var asArray = InfileTxt.Text.Split(Path.DirectorySeparatorChar);
                     var outfile = OutfileTxt.Text + Path.DirectorySeparatorChar + asArray[asArray.Length-1];
@@ -102,6 +108,7 @@ namespace CrossCorrupt
 
                 //run the corruptmanager
                 RunCorruptBtn.Text = "Stop";
+                Console.Log("UI: Running corruption on background thread", Console.LogTypes.Info);
                 cm.Run((double prog, System.IO.FileInfo f) =>
                 {
                     //run UI things on the UI thread
@@ -114,14 +121,15 @@ namespace CrossCorrupt
                            if ((bool)EnableFolderScrambleChck.Checked)
                            {
                                //run the folder scrambler here:
+                               Console.Log("UI: Corruption task completed, starting folder scramble", Console.LogTypes.Info);
                                runFolderScramble(InfileTxt.Text, FolderScrambleRoot.Text, OutfileTxt.Text);
-                               RunCorruptBtn.Text = "Scrambling Folder";
                            }
                            else
                            {
                                running = false;
+                               Console.Log("UI: Corruption task completed, skipped folder scramble", Console.LogTypes.Info);
                                RunCorruptBtn.Text = "Run Corrupt";
-                               MessageBox.Show("Corruption complete!");
+                               MessageBox.Show("Corruption complete!","CrossCorrupt");
                            }
                        }
                    });
@@ -129,7 +137,8 @@ namespace CrossCorrupt
             }
             else
             {
-                MessageBox.Show("Please enter an input file.");
+                Console.Log("UI: The form is invalid", Console.LogTypes.Warning);
+                MessageBox.Show("Please enter an input file.","CrossCorrupt");
             }      
         }
 
@@ -203,10 +212,14 @@ namespace CrossCorrupt
             int index = scrambleRoot.IndexOf(inputRoot);
             if (index < 0)
             {
-                MessageBox.Show("Folder Scramble directory is not a subfolder of the parent directory. Aborted.");
-                RunCorruptBtn.Text = "Run Corrupt"; 
+                MessageBox.Show("Folder Scramble directory is not a subfolder of the parent directory. Aborted.","CrossCorrupt");
+                RunCorruptBtn.Text = "Run Corrupt";
+
+                Console.Log("UI: Unable to scramble folder, subdirectory " + scrambleRoot + " is not inside " + inputRoot, Console.LogTypes.Error);
                 return;
             }
+
+            Console.Log("UI: Setting up folder scramble output directory ", Console.LogTypes.Info);
 
             //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the inputRoot
             var split = inputRoot.Split(Path.DirectorySeparatorChar);
@@ -214,9 +227,11 @@ namespace CrossCorrupt
             //fix directoryseparatorchar duplicating characters
             newPath = newPath.Replace("//","/");
             newPath = newPath.Replace("\\\\", "\\");
+            Console.Log("UI: Folder scramble output directory = " + newPath, Console.LogTypes.Info);
 
             //build filetypes hashset
             HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
+            Console.Log("UI: FileTypes = " + FolderScrambleTypesTxt.Text + "; scrambling " + ((bool)EnableSubfolderScramble.Checked? "these types only":"all except these types"), Console.LogTypes.Info);
 
             FolderScrambler fs = new FolderScrambler(newPath,(bool)FolderScrambleInvertChk.Checked,fileTypes,(bool)EnableSubfolderScramble.Checked);
             fs.ScrambleNames((double prog) =>
@@ -227,10 +242,12 @@ namespace CrossCorrupt
                 {
                     MainProg.Value = (int)prog;
                     if (prog >= 100)
-                    {    
+                    {   
+                         
                         RunCorruptBtn.Text = "Run Corrupt";
                         running = false;
-                        MessageBox.Show("Corruption complete!");               
+                        Console.Log("UI: Folder Scramble completed!",Console.LogTypes.Info);
+                        MessageBox.Show("Corruption complete!","CrossCorrupt");               
                     }
                 });
             });
