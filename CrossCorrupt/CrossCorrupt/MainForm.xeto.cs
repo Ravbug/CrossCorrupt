@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Serialization.Xaml;
+using System.Diagnostics;
 
 namespace CrossCorrupt
 {
@@ -392,12 +393,6 @@ namespace CrossCorrupt
             }
         }
 
-        //some sample methods to delete later
-        protected void HandleClickMe(object sender, EventArgs e)
-        {
-            MessageBox.Show("I was clicked!");
-        }
-
         //but keep these
         protected void HandleAbout(object sender, EventArgs e)
         {
@@ -407,6 +402,11 @@ namespace CrossCorrupt
         protected void HandleQuit(object sender, EventArgs e)
         {
             Application.Instance.Quit();
+        }
+
+        protected void HandleCheckUpdate(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/Ravbug/CrossCorrupt/releases");
         }
     }
 }
