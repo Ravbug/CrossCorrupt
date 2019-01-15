@@ -36,7 +36,14 @@
            </GroupBox>
            </TableRow>
            <TableRow>
-                <Label Text="Console output"></Label>
+                <TableLayout>
+                     <TableRow>
+                         <Label Text="Console output" />
+                         <Button Text="Copy Log" Click="CopyLogClicked" />
+                         <Button Text="Clear Log" Click="ClearLogClicked" />
+                         <Label Text="" />
+                     </TableRow>
+                </TableLayout>
            </TableRow>
            <TableRow>
                 <TextArea x:Name="ConsoleLog" ReadOnly="true"></TextArea>

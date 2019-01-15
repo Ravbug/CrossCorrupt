@@ -58,7 +58,7 @@ namespace CrossCorrupt
             {
                 FindSubFolders(folder);
             }
-            Console.Log("Initialized \"" + folderPath + "\" for scrambling, found subfolders = " + includeSubFolders, Console.LogTypes.Info);
+            Console.Log("FolderScrambler: Initialized \"" + folderPath + "\" for scrambling, found subfolders = " + includeSubFolders, Console.LogTypes.Info);
         }
 
         /// <summary>
@@ -112,7 +112,9 @@ namespace CrossCorrupt
         /// <param name="progress">method(double) to call on progress updates</param>
         public void ScrambleNames(Action<double> progress=null)
         {
-            Console.Log("Scrambling \"" + folderPath + "\"", Console.LogTypes.Info);
+           
+            Console.Log("FolderScrambler: Scrambling \"" + folderPath + "\"", Console.LogTypes.Info);
+            
             int prog = 0;
             int max = fileNames.Keys.Count;
             if (includeSubFolders)
@@ -154,7 +156,7 @@ namespace CrossCorrupt
             }
             //ensure progress is complete
             progress?.Invoke(100);
-            Console.Log("Completed scramble for \"" + folderPath + "\"", Console.LogTypes.Info);
+            Console.Log("FolderScramlber: Completed scramble for \"" + folderPath + "\"", Console.LogTypes.Info);           
         }
 
         /// <summary>
@@ -164,7 +166,7 @@ namespace CrossCorrupt
         public void RevertScramble(Action<double> progress)
         {
             //TODO: insert code which undos the folder scramble
-            Console.Log("Removing Scramble for \"" + folderPath + "\"", Console.LogTypes.Info);
+            Console.Log("FolderScrambler: Removing Scramble for \"" + folderPath + "\"", Console.LogTypes.Info);
             foreach (string changedFile in reverseFileNames.Keys)
             {
                 File.Move(CreateFullPath(changedFile), CreateFullPath(reverseFileNames[changedFile]) + tempExtension);
@@ -188,7 +190,7 @@ namespace CrossCorrupt
         /// </summary>
         private void CleanTempExtensions()
         {
-            Console.Log("Cleaning extensions for \"" + folderPath + "\"", Console.LogTypes.Info);
+            Console.Log("FolderScrambler: Cleaning extensions for \"" + folderPath + "\"", Console.LogTypes.Info);
             DirectoryInfo di = new DirectoryInfo(folderPath);
             FileInfo[] newFiles = di.GetFiles();
             foreach (FileInfo file in newFiles)

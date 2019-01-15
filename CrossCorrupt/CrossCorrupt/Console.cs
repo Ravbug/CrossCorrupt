@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Timers;
 using Eto.Forms;
 
 namespace CrossCorrupt
@@ -19,16 +19,40 @@ namespace CrossCorrupt
                 {LogTypes.Debug,"Debug"}
             };
 
-        public Console()
+        //the log buffer
+        private static string buffer;
+
+        //the timer for delayed posting
+        private static Timer timer = new Timer(250);
+
+        /// <summary>
+        /// Log the specified text and type (schedules it to prevent spam hanging the main thread).
+        /// </summary>
+        /// <param name="text">Text to log</param>
+        /// <param name="type">Type of the log</param>
+        public static void Log(string text,LogTypes type = LogTypes.Debug)
         {
+            buffer += "[" + logFormatMap[type] + "] " + text + "\n";
+            timer.Elapsed -= PostLogAsync;
+            timer.Elapsed += PostLogAsync;
+            timer.Start();
+            timer.AutoReset = true;
         }
 
-        public static void Log(string text,LogTypes type = LogTypes.Debug)
+        /// <summary>
+        /// Posts the log async. This prevents the UI from hanging if there's a high volume of logs.
+        /// </summary>
+        private static void PostLogAsync(object source, System.Timers.ElapsedEventArgs e)
         {
             //run always on UI thread
             Application.Instance.Invoke(() =>
             {
-                outputArea.Text += "[" + logFormatMap[type] + "] " + text + "\n";
+                if (buffer.Length > 0)
+                {
+                    outputArea.Append(buffer,true);
+                    buffer = "";
+                }
+                timer.AutoReset = false;
             });
         }
     }

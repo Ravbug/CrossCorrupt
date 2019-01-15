@@ -48,6 +48,8 @@ namespace CrossCorrupt
         private bool running = false;
         private CorruptManager cm;
         private Random random;
+
+        private Clipboard clipboard = new Clipboard();
       
             public MainForm()
         {
@@ -392,6 +394,29 @@ namespace CrossCorrupt
                 FolderScrambleBox.Enabled = false;
             }
         }
+
+        /// <summary>
+        /// Clears the log view.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        protected void ClearLogClicked(object sender, EventArgs e)
+        {
+            ConsoleLog.Text = "";
+        }
+
+        /// <summary>
+        /// Copies the log to the clipboard.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        protected void CopyLogClicked(object sender, EventArgs e)
+        {
+            clipboard.Text = ConsoleLog.Text;
+        }
+
+
+       
 
         //but keep these
         protected void HandleAbout(object sender, EventArgs e)
