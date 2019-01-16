@@ -40,6 +40,16 @@ namespace CrossCorrupt
         }
 
         /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="e">The exception to log</param>
+        /// <param name="notes">Programmer's notes to be displayed with the exception.</param>
+        public static void LogException(System.Exception e, string notes = " none provided.")
+        {
+            Log(e.GetType() + " occured in " + e.Source + ": " + e.Message + "\n" + e.StackTrace + "\nProgrammer's notes: " + notes, LogTypes.Error);
+        }
+
+        /// <summary>
         /// Posts the log async. This prevents the UI from hanging if there's a high volume of logs.
         /// </summary>
         private static void PostLogAsync(object source, System.Timers.ElapsedEventArgs e)
