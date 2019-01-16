@@ -396,6 +396,16 @@ namespace CrossCorrupt
         }
 
         /// <summary>
+        /// Clears the log view.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        protected void ClearLogClicked(object sender, EventArgs e)
+        {
+            ConsoleLog.Text = "";
+        }
+
+        /// <summary>
         /// Copies the log to the clipboard.
         /// </summary>
         /// <param name="sender">Sender.</param>
