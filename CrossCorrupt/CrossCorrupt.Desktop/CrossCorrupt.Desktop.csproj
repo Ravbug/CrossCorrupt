@@ -6,6 +6,7 @@
     <ApplicationManifest>CrossCorrupt.manifest</ApplicationManifest>
     <ApplicationIcon>CC.ico</ApplicationIcon>
     <Description></Description>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 	
   <ItemGroup>
