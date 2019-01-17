@@ -163,7 +163,7 @@ namespace CrossCorrupt
                                     File.Copy(f.FullName, newName, true);
                                 }
                                 //if unable to copy, catch silently
-                                catch (Exception e) { Console.Log("Unable to copy file " + f.FullName + " to " + newName + ", error = " + e.StackTrace, Console.LogTypes.Error); }
+                                catch (Exception e) { Console.LogException(e); }
                             }
                         }
                     }
@@ -243,7 +243,7 @@ namespace CrossCorrupt
                     paths.AddRange(queueFromRoot(d.FullName));
                 }
                 //in the event that a file is protected, catch silently
-                catch (Exception e) { Console.Log("Unable to AddRange, error = " + e.StackTrace,Console.LogTypes.Error); }
+                catch (Exception e) { Console.LogException(e); }
                 
             }
             Console.Log("CorruptManager: Queued " + paths.ToArray().Length + " files for corruption");
