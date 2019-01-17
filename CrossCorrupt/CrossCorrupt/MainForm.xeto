@@ -26,13 +26,14 @@
             <TableRow>
                <TableLayout><TableRow>
                     <Button Width="20" Text="Choose Input" Click="ChooseInputClicked" />
-                    <TextBox ReadOnly="true" PlaceholderText="Select input file(s)" x:Name="InfileTxt" Text=""/>
+                    <TextBox ReadOnly="true" PlaceholderText="Select input file" x:Name="InfileTxt" Text=""/>
                </TableRow><TableRow>
                      <Button Text="Choose Output" Click="ChooseOutputClicked"/>
                      <TextBox ReadOnly="true" PlaceholderText="Select output directory" x:Name="OutfileTxt" Text="" />
                </TableRow><TableRow>
-                     <Label Text="Custom Name"/>
-                     <TextBox x:Name="CustomNameText" PlaceholderText="If blank, will use the input file's name'"/> 
+                     <Label Text="Custom Name" ToolTip="Choose a new name for your corrupted file/folder"/>
+                     <TextBox x:Name="CustomNameText" PlaceholderText="Leave blank to use the input file's name"
+                              ToolTip="Choose a new name for your corrupted file/folder"/> 
                </TableRow>
                </TableLayout>                
             </TableRow>
@@ -130,6 +131,9 @@
                               CheckedChanged="enableFolderScrambleStateChanged"
                               ToolTip="Scrambles the names of the files in a folder. See &quot;Additional Options&quot;"
                               >Enable Folder Scramble</CheckBox>
+                    <Label x:Name="FolderScrambleSettingsReminder"
+                           Text="Remember to check your scramble settings in the 'Additional Options' tab."
+                           TextColor="Red" Visible="False"/>
                   </TableRow>
                 </TableLayout>
               </GroupBox>

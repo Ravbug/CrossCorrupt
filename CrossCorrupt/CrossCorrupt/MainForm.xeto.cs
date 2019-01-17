@@ -30,6 +30,7 @@ namespace CrossCorrupt
         private Button RunCorruptBtn;
         private CheckBox FolderScrambleInvertChk;
         private TextArea FolderScrambleTypesTxt;
+        private Label FolderScrambleSettingsReminder;
 
         private CheckBox AutoChangeCorruptEveryChck;
         private CheckBox AutoChangeStartChck;
@@ -395,6 +396,7 @@ namespace CrossCorrupt
         {
             if (SelectTypeList.SelectedIndex ==1)
             {
+                InfileTxt.PlaceholderText = "Select input folder";
                 FolderCorruptBox.Enabled = true;
                 if (EnableFolderScrambleChck.Checked == true)
                 {
@@ -403,6 +405,7 @@ namespace CrossCorrupt
             }
             else
             {
+                InfileTxt.PlaceholderText = "Select input file";
                 FolderCorruptBox.Enabled = false;
                 FolderScrambleBox.Enabled = false;
                 EnableFolderScrambleChck.Checked = false;
@@ -416,10 +419,12 @@ namespace CrossCorrupt
         {
             if (EnableFolderScrambleChck.Checked == true && SelectTypeList.SelectedIndex == 1)
             {
+                FolderScrambleSettingsReminder.Visible = true;
                 FolderScrambleBox.Enabled = true;
             }
             else
             {
+                FolderScrambleSettingsReminder.Visible = false;
                 FolderScrambleBox.Enabled = false;
             }
         }
