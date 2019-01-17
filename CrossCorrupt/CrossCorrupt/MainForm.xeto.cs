@@ -39,7 +39,7 @@ namespace CrossCorrupt
         private NumericStepper AutoStartMinStepper; private NumericStepper AutoStartMaxStepper;
         private NumericStepper AutoOldMinStepper; private NumericStepper AutoOldMaxStepper;
         private NumericStepper AutoNewMinStepper; private NumericStepper AutoNewMaxStepper;
-
+        private TextBox CustomNameText;
         private TextBox FolderScrambleRoot;
         private TextArea ConsoleLog;
 
@@ -104,7 +104,7 @@ namespace CrossCorrupt
                         Console.Log("UI: Setting filetypes = " + FileTypesTxt.Text.Trim(), Console.LogTypes.Info);
                         //determine the output folder
                         var asArray = InfileTxt.Text.Split(Path.DirectorySeparatorChar);
-                        var outfile = OutfileTxt.Text + Path.DirectorySeparatorChar + asArray[asArray.Length - 1];
+                        var outfile = OutfileTxt.Text + Path.DirectorySeparatorChar + (CustomNameText.Text.Length > 0? CustomNameText.Text : asArray[asArray.Length - 1]);
                         //fix any duplicating slashes (windows only)
                         outfile = outfile.Replace("\\\\", "\\");
                         cm = new CorruptManager(InfileTxt.Text, outfile, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value, filetypes, folderCorruptSelect.SelectedIndex != 0);
@@ -234,7 +234,7 @@ namespace CrossCorrupt
 
                 //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the inputRoot
                 var split = inputRoot.Split(Path.DirectorySeparatorChar);
-                string newPath = destinationRoot + Path.DirectorySeparatorChar + split[split.Length - 1] + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
+                string newPath = destinationRoot + Path.DirectorySeparatorChar + (CustomNameText.Text.Length > 0 ? CustomNameText.Text + Path.DirectorySeparatorChar : split[split.Length - 1]) + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
                 //fix directoryseparatorchar duplicating characters
                 newPath = newPath.Replace("//", "/");
                 newPath = newPath.Replace("\\\\", "\\");
@@ -383,12 +383,15 @@ namespace CrossCorrupt
                 if (EnableFolderScrambleChck.Checked == true)
                 {
                     FolderScrambleBox.Enabled = true;
+                    CustomNameText.Enabled = true;
                 }
             }
             else
             {
                 FolderCorruptBox.Enabled = false;
                 FolderScrambleBox.Enabled = false;
+                EnableFolderScrambleChck.Checked = false;
+                CustomNameText.Enabled = false;
             }
             //prevent crashing due to user changing mode without changing files
             InfileTxt.Text = "";

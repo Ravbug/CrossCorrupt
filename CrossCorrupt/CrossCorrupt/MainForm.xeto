@@ -30,7 +30,11 @@
                </TableRow><TableRow>
                      <Button Text="Choose Output" Click="ChooseOutputClicked"/>
                      <TextBox ReadOnly="true" PlaceholderText="Select output directory" x:Name="OutfileTxt" Text="" />
-               </TableRow></TableLayout>            
+               </TableRow><TableRow>
+                     <Label Text="Custom Name"/>
+                     <TextBox x:Name="CustomNameText" PlaceholderText="If blank, will use the input file's name'"/> 
+               </TableRow>
+               </TableLayout>                
             </TableRow>
           </TableLayout>
            </GroupBox>
