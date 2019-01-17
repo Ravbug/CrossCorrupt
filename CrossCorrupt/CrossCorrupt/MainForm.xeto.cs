@@ -91,7 +91,23 @@ namespace CrossCorrupt
                     CorruptManager.CorruptionType type = (CorruptManager.CorruptionType)CorruptTypeCombo.SelectedIndex;
                     if (SelectTypeList.SelectedIndex == 0)
                     {
+                        string newName;
+                        if (CustomNameText.Text.Length > 0)
+                        {
+                            newName = OutfileTxt.Text + Path.DirectorySeparatorChar + CustomNameText.Text;
+                            FileInfo f = new FileInfo(newName);
+                            if (f.Extension.Length == 0)
+                            {
+                                newName += InfileTxt.Text.Substring(InfileTxt.Text.LastIndexOf('.'));
+                            }
+                        }
+                        else
+                        {
+                            newName = OutfileTxt.Text;
+                        }
                         cm = new CorruptManager(sourceFiles, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
+                        //use new alternate constructor
+                        //cm = new CorruptManager(sourceFiles[0], OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value,newName);
                     }
                     else
                     {
@@ -383,7 +399,6 @@ namespace CrossCorrupt
                 if (EnableFolderScrambleChck.Checked == true)
                 {
                     FolderScrambleBox.Enabled = true;
-                    CustomNameText.Enabled = true;
                 }
             }
             else
@@ -391,7 +406,6 @@ namespace CrossCorrupt
                 FolderCorruptBox.Enabled = false;
                 FolderScrambleBox.Enabled = false;
                 EnableFolderScrambleChck.Checked = false;
-                CustomNameText.Enabled = false;
             }
             //prevent crashing due to user changing mode without changing files
             InfileTxt.Text = "";

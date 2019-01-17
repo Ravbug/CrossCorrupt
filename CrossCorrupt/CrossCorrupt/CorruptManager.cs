@@ -22,6 +22,8 @@ namespace CrossCorrupt
         private long startByte;
         private long endByte;
 
+        private string customName;
+
         CorruptionType corruptType;
 
         public enum CorruptionType
@@ -58,6 +60,23 @@ namespace CrossCorrupt
         }
 
         /// <summary>
+        /// Constructs a CorruptManager with a single file and support for a custom output fiel name
+        /// </summary>
+        /// <param name="inFile">path to the file to corrupt</param>
+        /// <param name="destination">Root folder to corrupt to, without any trailing / or \ in the path</param>
+        /// <param name="mode">Whether to Insert, Replace, or Delete corrupt the file</param>
+        /// <param name="sByte">Byte to start corrupting from.</param>
+        /// <param name="eByte">Byte to stop corrupting from. Pass -1 to automatically set the end byte.</param>
+        /// <param name="nVal">N value for the corrupting methods</param>
+        /// <param name="obyte">bye to replace / insert after / delete</param>
+        /// <param name="nByte">Replacement / insertion byte</param>
+        /// <param name="newName">custom name for the file (must be a fully qualified path) </param>
+        public CorruptManager(string inFile, string destination, CorruptionType mode, long sByte, long eByte, int nVal, byte obyte, byte nByte = 0, string newName = null): this(new string[] { inFile }, destination, mode, sByte, eByte, nVal, obyte, nByte)
+        {
+            customName = newName;
+        }
+
+        /// <summary>
         /// Constructs a CorruptManager which corrupts all the files in all subdirectories
         /// </summary>
         /// <param name="rootFolder">Root folder to corrupt</param>
@@ -66,7 +85,7 @@ namespace CrossCorrupt
         /// <param name="sByte">Byte to start corrupting from.</param>
         /// <param name="eByte">Byte to stop corrupting from. Pass -1 to automatically set the end byte.</param>
         /// <param name="nVal">N value for the corrupting methods</param>
-        /// <param name="obyte">bye to replace / insert after / delete</param>
+        /// <param name="oByte">bye to replace / insert after / delete</param>
         /// <param name="nByte">Replacement / insertion byte</param>
         /// <param name="filetypes">Array of file extensions to corrupt, or null to corrupt all file extensions</param>
         /// <param name="inverttypes">True if the program should corrupt every file EXCEPT those in the filetypes hashset</param>
@@ -111,6 +130,7 @@ namespace CrossCorrupt
                             {
                                 newName = f.FullName.Replace(rootfolder, outFolder);
                             }
+
                             fc.updateFiles(f, new FileInfo(newName));
                             //create necessary folders 
                             Directory.CreateDirectory(newName.Replace(f.Name, ""));
