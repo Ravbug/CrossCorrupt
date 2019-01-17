@@ -58,6 +58,7 @@ namespace CrossCorrupt
 
             SelectTypeList.SelectedIndex = 0;
             folderCorruptSelect.SelectedIndex = 0;
+            CorruptTypeCombo.SelectedIndex = 0;
             random = new Random();
         }
 
