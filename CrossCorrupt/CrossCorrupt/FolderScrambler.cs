@@ -40,25 +40,31 @@ namespace CrossCorrupt
         public FolderScrambler(string folder, bool allExcept, HashSet<string> extensions = null,
             bool includeSubFolders = false)
         {
-            this.extensions = extensions;
-            this.allExcept = allExcept;
-            if (folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            try
             {
-                folderPath = folder;
-            }
-            else
+                this.extensions = extensions;
+                this.allExcept = allExcept;
+                if (folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                {
+                    folderPath = folder;
+                }
+                else
+                {
+                    folderPath = folder + Path.DirectorySeparatorChar;
+                }
+                this.includeSubFolders = includeSubFolders;
+                random = new Random();
+                fileNames = new Dictionary<string, List<string>>();
+                GenerateNameList(folder, allExcept, extensions);
+                if (includeSubFolders)
+                {
+                    FindSubFolders(folder);
+                }
+                Console.Log("FolderScrambler: Initialized \"" + folderPath + "\" for scrambling, found subfolders = " + includeSubFolders, Console.LogTypes.Info);
+            }catch(Exception e)
             {
-                folderPath = folder + Path.DirectorySeparatorChar;
+                Console.LogException(e, "See Folder Scrambler's constructor");
             }
-            this.includeSubFolders = includeSubFolders;
-            random = new Random();
-            fileNames = new Dictionary<string, List<string>>();
-            GenerateNameList(folder, allExcept, extensions);
-            if (includeSubFolders)
-            {
-                FindSubFolders(folder);
-            }
-            Console.Log("FolderScrambler: Initialized \"" + folderPath + "\" for scrambling, found subfolders = " + includeSubFolders, Console.LogTypes.Info);
         }
 
         /// <summary>
@@ -112,51 +118,57 @@ namespace CrossCorrupt
         /// <param name="progress">method(double) to call on progress updates</param>
         public void ScrambleNames(Action<double> progress=null)
         {
-           
-            Console.Log("FolderScrambler: Scrambling \"" + folderPath + "\"", Console.LogTypes.Info);
-            
-            int prog = 0;
-            int max = fileNames.Keys.Count;
-            if (includeSubFolders)
+            try
             {
-                max += subFolders.Length;
-            }
-            foreach (string extension in fileNames.Keys)
-            {
-                List<string> names = fileNames[extension];
+                Console.Log("FolderScrambler: Scrambling \"" + folderPath + "\"", Console.LogTypes.Info);
 
-                List<int> randomNumbers = GetRandomNumbers(names.Count);
-
-                int randomNum;
-
-                for (int i = 0; i < names.Count && i < randomNumbers.Count; i++)
+                int prog = 0;
+                int max = fileNames.Keys.Count;
+                if (includeSubFolders)
                 {
-                    randomNum = randomNumbers[i];
-                    //reverseFileNames.Add(names[randomNum], names[i]);
-                    //Turns off the reverse scrambling ability
-                    File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
+                    max += subFolders.Length;
                 }
-                prog++;
-                //update progress
-                progress?.Invoke(prog / max);
-            }
-
-            CleanTempExtensions();
-
-            if (includeSubFolders)
-            {
-                foreach (DirectoryInfo directory in subFolders)
+                foreach (string extension in fileNames.Keys)
                 {
-                    FolderScrambler sc = new FolderScrambler(directory.FullName, allExcept, extensions, includeSubFolders);
-                    //scrambledSubFolders.AddLast(sc); For reversability
-                    sc.ScrambleNames(null);//TODO make sure that is how it works
+                    List<string> names = fileNames[extension];
+
+                    List<int> randomNumbers = GetRandomNumbers(names.Count);
+
+                    int randomNum;
+
+                    for (int i = 0; i < names.Count && i < randomNumbers.Count; i++)
+                    {
+                        randomNum = randomNumbers[i];
+                        //reverseFileNames.Add(names[randomNum], names[i]);
+                        //Turns off the reverse scrambling ability
+                        File.Move(CreateFullPath(names[i]), CreateFullPath(names[randomNum]) + tempExtension);
+                    }
                     prog++;
-                    progress?.Invoke(prog/max);
+                    //update progress
+                    progress?.Invoke(prog / max);
                 }
+
+                CleanTempExtensions();
+
+                if (includeSubFolders)
+                {
+                    foreach (DirectoryInfo directory in subFolders)
+                    {
+                        FolderScrambler sc = new FolderScrambler(directory.FullName, allExcept, extensions, includeSubFolders);
+                        //scrambledSubFolders.AddLast(sc); For reversability
+                        sc.ScrambleNames(null);
+                        prog++;
+                        progress?.Invoke(prog / max);
+                    }
+                }
+                //ensure progress is complete
+                progress?.Invoke(100);
+                Console.Log("FolderScramlber: Completed scramble for \"" + folderPath + "\"", Console.LogTypes.Info);
             }
-            //ensure progress is complete
-            progress?.Invoke(100);
-            Console.Log("FolderScramlber: Completed scramble for \"" + folderPath + "\"", Console.LogTypes.Info);           
+            catch(Exception e)
+            {
+                Console.LogException(e, "Check ScrambleNames()");
+            }
         }
 
         /// <summary>

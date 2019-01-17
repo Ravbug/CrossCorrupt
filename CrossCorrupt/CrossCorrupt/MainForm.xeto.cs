@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Eto.Forms;
-using Eto.Drawing;
 using Eto.Serialization.Xaml;
 using System.Diagnostics;
 
@@ -69,80 +68,86 @@ namespace CrossCorrupt
         /// <param name="e">Event arguments</param>
         protected void RunCorrupt(object sender, EventArgs e)
         {
-            //cancel if already running
-            if (running)
+            try
             {
-                cm.CancelWorker();
-
-                running = false;
-                RunCorruptBtn.Text = "Run Corrupt";
-                Console.Log("UI: User aborted corruption",Console.LogTypes.Error);
-
-            }
-            //otherwise setup and run
-            else if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
-            {
-                Console.Log("UI: Initializing corruption backend",Console.LogTypes.Info);
-                //randomize inputs if applicable
-                randomizeInputs();
-
-                CorruptManager.CorruptionType type = (CorruptManager.CorruptionType)CorruptTypeCombo.SelectedIndex;
-                if (SelectTypeList.SelectedIndex == 0)
+                //cancel if already running
+                if (running)
                 {
-                    cm = new CorruptManager(sourceFiles, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
+                    cm.CancelWorker();
+
+                    running = false;
+                    RunCorruptBtn.Text = "Run Corrupt";
+                    Console.Log("UI: User aborted corruption", Console.LogTypes.Error);
+
+                }
+                //otherwise setup and run
+                else if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
+                {
+                    Console.Log("UI: Initializing corruption backend", Console.LogTypes.Info);
+                    //randomize inputs if applicable
+                    randomizeInputs();
+
+                    CorruptManager.CorruptionType type = (CorruptManager.CorruptionType)CorruptTypeCombo.SelectedIndex;
+                    if (SelectTypeList.SelectedIndex == 0)
+                    {
+                        cm = new CorruptManager(sourceFiles, OutfileTxt.Text, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value);
+                    }
+                    else
+                    {
+                        //make filetypes 
+                        HashSet<string> filetypes = new HashSet<string>(FileTypesTxt.Text.Split(','));
+                        if (FileTypesTxt.Text.Trim().Length == 0)
+                        {
+                            filetypes = null;
+                        }
+                        Console.Log("UI: Setting filetypes = " + FileTypesTxt.Text.Trim(), Console.LogTypes.Info);
+                        //determine the output folder
+                        var asArray = InfileTxt.Text.Split(Path.DirectorySeparatorChar);
+                        var outfile = OutfileTxt.Text + Path.DirectorySeparatorChar + asArray[asArray.Length - 1];
+                        //fix any duplicating slashes (windows only)
+                        outfile = outfile.Replace("\\\\", "\\");
+                        cm = new CorruptManager(InfileTxt.Text, outfile, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value, filetypes, folderCorruptSelect.SelectedIndex != 0);
+                    }
+                    running = true;
+
+                    //run the corruptmanager
+                    RunCorruptBtn.Text = "Stop";
+                    Console.Log("UI: Running corruption on background thread", Console.LogTypes.Info);
+                    cm.Run((double prog, System.IO.FileInfo f) =>
+                    {
+                    //run UI things on the UI thread
+                    Application.Instance.Invoke(() =>
+                       {
+                           MainProg.Value = (int)prog;
+                           if (prog >= 100)
+                           {
+                               if ((bool)EnableFolderScrambleChck.Checked)
+                               {
+                               //run the folder scrambler here:
+                               Console.Log("UI: Corruption task completed, starting folder scramble", Console.LogTypes.Info);
+                                   runFolderScramble(InfileTxt.Text, FolderScrambleRoot.Text, OutfileTxt.Text);
+                               }
+                               else
+                               {
+                                   running = false;
+                                   Console.Log("UI: Corruption task completed, skipped folder scramble", Console.LogTypes.Info);
+                                   RunCorruptBtn.Text = "Run Corrupt";
+                                   MessageBox.Show("Corruption complete!", "CrossCorrupt");
+                               }
+                           }
+                       });
+                    });
                 }
                 else
                 {
-                    //make filetypes 
-                    HashSet<string> filetypes = new HashSet<string>(FileTypesTxt.Text.Split(','));
-                    if (FileTypesTxt.Text.Trim().Length == 0)
-                    {
-                        filetypes = null;
-                    }
-                    Console.Log("UI: Setting filetypes = " + FileTypesTxt.Text.Trim(), Console.LogTypes.Info);
-                    //determine the output folder
-                    var asArray = InfileTxt.Text.Split(Path.DirectorySeparatorChar);
-                    var outfile = OutfileTxt.Text + Path.DirectorySeparatorChar + asArray[asArray.Length-1];
-                    //fix any duplicating slashes (windows only)
-                    outfile = outfile.Replace("\\\\", "\\");
-                    cm = new CorruptManager(InfileTxt.Text, outfile, type, (long)startByteStepper.Value, (long)endBytesStepper.Value, (int)nBytesStepper.Value, (byte)oldByteStepper.Value, (byte)newByteStepper.Value,filetypes, folderCorruptSelect.SelectedIndex!=0);
+                    Console.Log("UI: The form is invalid", Console.LogTypes.Warning);
+                    MessageBox.Show("Please enter an input file.", "CrossCorrupt");
                 }
-                running = true;
-
-                //run the corruptmanager
-                RunCorruptBtn.Text = "Stop";
-                Console.Log("UI: Running corruption on background thread", Console.LogTypes.Info);
-                cm.Run((double prog, System.IO.FileInfo f) =>
-                {
-                    //run UI things on the UI thread
-                    Application.Instance.Invoke(() =>
-                   {
-                       MainProg.Value = (int)prog;
-                       if (prog >= 100)
-                      {
-                           //TODO: create and run the FolderScrambler, if applicable
-                           if ((bool)EnableFolderScrambleChck.Checked)
-                           {
-                               //run the folder scrambler here:
-                               Console.Log("UI: Corruption task completed, starting folder scramble", Console.LogTypes.Info);
-                               runFolderScramble(InfileTxt.Text, FolderScrambleRoot.Text, OutfileTxt.Text);
-                           }
-                           else
-                           {
-                               running = false;
-                               Console.Log("UI: Corruption task completed, skipped folder scramble", Console.LogTypes.Info);
-                               RunCorruptBtn.Text = "Run Corrupt";
-                               MessageBox.Show("Corruption complete!","CrossCorrupt");
-                           }
-                       }
-                   });
-                });
             }
-            else
+            catch (Exception ex)
             {
-                Console.Log("UI: The form is invalid", Console.LogTypes.Warning);
-                MessageBox.Show("Please enter an input file.","CrossCorrupt");
-            }      
+                Console.LogException(ex,"See the RunCorrupt method.");
+            }
         }
 
         /// <summary>
@@ -212,48 +217,54 @@ namespace CrossCorrupt
         /// <param name="destinationRoot">Root path where the corrupt job will be written</param>
         private void runFolderScramble(string inputRoot, string scrambleRoot,string destinationRoot)
         {
-            int index = scrambleRoot.IndexOf(inputRoot);
-            if (index < 0)
+            try
             {
-                MessageBox.Show("Folder Scramble directory is not a subfolder of the parent directory. Aborted.","CrossCorrupt");
-                RunCorruptBtn.Text = "Run Corrupt";
+                int index = scrambleRoot.IndexOf(inputRoot);
+                if (index < 0)
+                {
+                    MessageBox.Show("Folder Scramble directory is not a subfolder of the parent directory. Aborted.", "CrossCorrupt");
+                    RunCorruptBtn.Text = "Run Corrupt";
 
-                Console.Log("UI: Unable to scramble folder, subdirectory " + scrambleRoot + " is not inside " + inputRoot, Console.LogTypes.Error);
-                return;
-            }
+                    Console.Log("UI: Unable to scramble folder, subdirectory " + scrambleRoot + " is not inside " + inputRoot, Console.LogTypes.Error);
+                    return;
+                }
 
-            Console.Log("UI: Setting up folder scramble output directory ", Console.LogTypes.Info);
+                Console.Log("UI: Setting up folder scramble output directory ", Console.LogTypes.Info);
 
-            //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the inputRoot
-            var split = inputRoot.Split(Path.DirectorySeparatorChar);
-            string newPath = destinationRoot + Path.DirectorySeparatorChar + split[split.Length-1] + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
-            //fix directoryseparatorchar duplicating characters
-            newPath = newPath.Replace("//","/");
-            newPath = newPath.Replace("\\\\", "\\");
-            Console.Log("UI: Folder scramble output directory = " + newPath, Console.LogTypes.Info);
+                //build the new destination folder by taking the common parts of the scrambleRoot (user picked) and the inputRoot
+                var split = inputRoot.Split(Path.DirectorySeparatorChar);
+                string newPath = destinationRoot + Path.DirectorySeparatorChar + split[split.Length - 1] + Path.DirectorySeparatorChar + scrambleRoot.Substring(inputRoot.Length);
+                //fix directoryseparatorchar duplicating characters
+                newPath = newPath.Replace("//", "/");
+                newPath = newPath.Replace("\\\\", "\\");
+                Console.Log("UI: Folder scramble output directory = " + newPath, Console.LogTypes.Info);
 
-            //build filetypes hashset
-            HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
-            Console.Log("UI: FileTypes = " + FolderScrambleTypesTxt.Text + "; scrambling " + ((bool)EnableSubfolderScramble.Checked? "these types only":"all except these types"), Console.LogTypes.Info);
+                //build filetypes hashset
+                HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
+                Console.Log("UI: FileTypes = " + FolderScrambleTypesTxt.Text + "; scrambling " + ((bool)EnableSubfolderScramble.Checked ? "these types only" : "all except these types"), Console.LogTypes.Info);
 
-            FolderScrambler fs = new FolderScrambler(newPath,(bool)FolderScrambleInvertChk.Checked,fileTypes,(bool)EnableSubfolderScramble.Checked);
-            fs.ScrambleNames((double prog) =>
-            {
+                FolderScrambler fs = new FolderScrambler(newPath, (bool)FolderScrambleInvertChk.Checked, fileTypes, (bool)EnableSubfolderScramble.Checked);
+                fs.ScrambleNames((double prog) =>
+                {
                 //progress updates go here
                 //run UI things on the UI thread
                 Application.Instance.Invoke(() =>
-                {
-                    MainProg.Value = (int)prog;
-                    if (prog >= 100)
-                    {   
-                         
-                        RunCorruptBtn.Text = "Run Corrupt";
-                        running = false;
-                        Console.Log("UI: Folder Scramble completed!",Console.LogTypes.Info);
-                        MessageBox.Show("Corruption complete!","CrossCorrupt");               
-                    }
+                    {
+                        MainProg.Value = (int)prog;
+                        if (prog >= 100)
+                        {
+
+                            RunCorruptBtn.Text = "Run Corrupt";
+                            running = false;
+                            Console.Log("UI: Folder Scramble completed!", Console.LogTypes.Info);
+                            MessageBox.Show("Corruption complete!", "CrossCorrupt");
+                        }
+                    });
                 });
-            });
+            }catch(Exception e)
+            {
+                Console.LogException(e, "See RunFolderScramble");
+            }
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 
 namespace CrossCorrupt
@@ -91,109 +90,90 @@ namespace CrossCorrupt
             //initialize the background worker
             Console.Log("CorruptManager: Initializing background worker");
             worker = new Thread(() => {
-                FileCorruptor fc = new FileCorruptor(null,null,startByte,endByte);
-                //corrupt all the files, or corrupt only certain types?
-                if (fileTypes == null)
+                try
                 {
-                    Console.Log("CorruptManager: Using predefined queue, beginning corruption");
-                    //corrupt each file in the list
-                    for (int i = 0; i < queue.Length; i++)
+                    FileCorruptor fc = new FileCorruptor(null, null, startByte, endByte);
+                    //corrupt all the files, or corrupt only certain types?
+                    if (fileTypes == null)
                     {
-                        FileInfo f = queue[i];
-                        //if the corruptor is corrupting a batch of singletons, newname is different
-                        string newName;
-                        if (rootfolder == null)
+                        Console.Log("CorruptManager: Using predefined queue, beginning corruption");
+                        //corrupt each file in the list
+                        for (int i = 0; i < queue.Length; i++)
                         {
-                            newName = outFolder + Path.DirectorySeparatorChar + f.Name;
-                        }
-                        else
-                        {
-                            newName = f.FullName.Replace(rootfolder, outFolder);
-                        }
-                         fc.updateFiles(f,new FileInfo(newName));
-                        //create necessary folders 
-                        Directory.CreateDirectory(newName.Replace(f.Name,""));
-
-                        //corrupt the file
-                        corruptOne(fc, corruptType, n, oldByte, newByte);
-
-                        //progress update
-                        if (i == queue.Length - 1 || i % 10 == 0)
-                        {
-                            callback?.Invoke((double)(i+1) / queue.Length * 100, f);
-                        }
-                    }
-                }
-                else
-                {
-                    Console.Log("CorruptManager: Using queue hashset rules, beginning corruption");
-
-                    for (int i = 0; i <queue.Length; i++)
-                    {
-                        FileInfo f = queue[i];
-                        //corrupt if file type is compatible
-                        //if not inverting and has type, or inverting and does not have type
-                        if ((fileTypes.Contains(f.Extension) && !invertFiletypes) || (invertFiletypes && !fileTypes.Contains(f.Extension)))
-                        {
-                            string newName = f.FullName.Replace(rootfolder, outFolder);
+                            FileInfo f = queue[i];
+                            //if the corruptor is corrupting a batch of singletons, newname is different
+                            string newName;
+                            if (rootfolder == null)
+                            {
+                                newName = outFolder + Path.DirectorySeparatorChar + f.Name;
+                            }
+                            else
+                            {
+                                newName = f.FullName.Replace(rootfolder, outFolder);
+                            }
                             fc.updateFiles(f, new FileInfo(newName));
-                            //create necessary directories
+                            //create necessary folders 
                             Directory.CreateDirectory(newName.Replace(f.Name, ""));
 
                             //corrupt the file
-                            corruptOne(fc,corruptType,n,oldByte,newByte);
+                            corruptOne(fc, corruptType, n, oldByte, newByte);
 
                             //progress update
                             if (i == queue.Length - 1 || i % 10 == 0)
                             {
-                                callback?.Invoke((double)(i) / queue.Length * 100, f);
+                                callback?.Invoke((double)(i + 1) / queue.Length * 100, f);
                             }
-
-                        }
-                        //otherwise copy the file
-                        else
-                        {
-                            string newName = f.FullName.Replace(rootfolder, outFolder);
-                            //create necessary directories
-                            Directory.CreateDirectory(newName.Replace(f.Name, ""));
-                            //copy the file, overwrite it if necessary
-                            try
-                            {
-                                File.Copy(f.FullName, newName, true);
-                            }
-                            //if unable to copy, catch silently
-                            catch (Exception e) { Console.Log("Unable to copy file " + f.FullName + " to " + newName + ", error = " + e.StackTrace,Console.LogTypes.Error); }
                         }
                     }
+                    else
+                    {
+                        Console.Log("CorruptManager: Using queue hashset rules, beginning corruption");
+
+                        for (int i = 0; i < queue.Length; i++)
+                        {
+                            FileInfo f = queue[i];
+                            //corrupt if file type is compatible
+                            //if not inverting and has type, or inverting and does not have type
+                            if ((fileTypes.Contains(f.Extension) && !invertFiletypes) || (invertFiletypes && !fileTypes.Contains(f.Extension)))
+                            {
+                                string newName = f.FullName.Replace(rootfolder, outFolder);
+                                fc.updateFiles(f, new FileInfo(newName));
+                                //create necessary directories
+                                Directory.CreateDirectory(newName.Replace(f.Name, ""));
+
+                                //corrupt the file
+                                corruptOne(fc, corruptType, n, oldByte, newByte);
+
+                                //progress update
+                                if (i == queue.Length - 1 || i % 10 == 0)
+                                {
+                                    callback?.Invoke((double)(i) / queue.Length * 100, f);
+                                }
+
+                            }
+                            //otherwise copy the file
+                            else
+                            {
+                                string newName = f.FullName.Replace(rootfolder, outFolder);
+                                //create necessary directories
+                                Directory.CreateDirectory(newName.Replace(f.Name, ""));
+                                //copy the file, overwrite it if necessary
+                                try
+                                {
+                                    File.Copy(f.FullName, newName, true);
+                                }
+                                //if unable to copy, catch silently
+                                catch (Exception e) { Console.Log("Unable to copy file " + f.FullName + " to " + newName + ", error = " + e.StackTrace, Console.LogTypes.Error); }
+                            }
+                        }
+                    }
+                    //invoke 100% progress when complete
+                    callback?.Invoke(100, null);
+
                 }
-                //invoke 100% progress when complete
-                callback?.Invoke(100, null);
-
-
-                //if overwrite is true, then instead of copying files, leave them where they are
-            });
-            worker.Start();
-        }
-
-        /// <summary>
-        /// Run the folder scrambler on a background thread
-        /// </summary>
-        /// <param name="fc">FolderScrambler object to use</param>  
-        /// <param name="revert">Whether to revert the folder back to its original state</param>
-        /// <param name="progress">method(double) to call on progress updates</param>
-        public void ScrambleFolder(FolderScrambler fc,bool revert,Action<double> progress)
-        {
-            worker = new Thread(() =>
-            {
-                if (revert)
+                catch(Exception e)
                 {
-                    Console.Log("CorruptManager: Starting Folder Scramble Revert on background thread",Console.LogTypes.Warning);
-                    fc.RevertScramble(progress);
-                }
-                else
-                {
-                    Console.Log("CorruptManager: Starting Folder Scramble on background thread");
-                    fc.ScrambleNames(progress);
+                    Console.LogException(e,"See the run method.");
                 }
             });
             worker.Start();
