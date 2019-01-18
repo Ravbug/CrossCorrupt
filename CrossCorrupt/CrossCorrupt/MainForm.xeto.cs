@@ -43,6 +43,7 @@ namespace CrossCorrupt
         private TextBox CustomNameText;
         private TextBox FolderScrambleRoot;
         private TextArea ConsoleLog;
+        private Label CustomNameL;
 
         private string[] sourceFiles;
         private bool running = false;
@@ -402,6 +403,8 @@ namespace CrossCorrupt
                 {
                     FolderScrambleBox.Enabled = true;
                 }
+                CustomNameText.Visible = true;
+                CustomNameL.Visible = true;
             }
             else
             {
@@ -409,6 +412,9 @@ namespace CrossCorrupt
                 FolderCorruptBox.Enabled = false;
                 FolderScrambleBox.Enabled = false;
                 EnableFolderScrambleChck.Checked = false;
+                CustomNameText.Visible = false;
+                CustomNameL.Visible = false;
+
             }
             //prevent crashing due to user changing mode without changing files
             InfileTxt.Text = "";

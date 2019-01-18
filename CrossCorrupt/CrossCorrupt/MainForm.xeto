@@ -31,8 +31,8 @@
                      <Button Text="Choose Output" Click="ChooseOutputClicked"/>
                      <TextBox ReadOnly="true" PlaceholderText="Select output directory" x:Name="OutfileTxt" Text="" />
                </TableRow><TableRow>
-                     <Label Text="Custom Name" ToolTip="Choose a new name for your corrupted file/folder"/>
-                     <TextBox x:Name="CustomNameText" PlaceholderText="Leave blank to use the input file's name"
+                     <Label Visible="false" x:Name="CustomNameL" Text="Custom Name" ToolTip="Choose a new name for your corrupted file/folder"/>
+                     <TextBox Visible="false" x:Name="CustomNameText" PlaceholderText="If blank, will use original folder's name"
                               ToolTip="Choose a new name for your corrupted file/folder"/> 
                </TableRow>
                </TableLayout>                
