@@ -150,11 +150,13 @@
                     <Label>Set Folders</Label>
                   </TableRow>
                   <TableRow>
-                    <Button Click="chooseFolderScrambleFolder" Text="Choose"></Button>
-                    <TextBox x:Name="FolderScrambleRoot" ReadOnly="true" PlaceholderText="Path to folder"></TextBox>
+                    <Button Click="chooseFolderScrambleFolder" Text="Choose"
+                            ToolTip="Chooses which folder you want to scramble."></Button>
+                    <TextBox x:Name="FolderScrambleRoot" ReadOnly="true" PlaceholderText="Path to folder"
+                             ToolTip="Chooses which folder you want to scramble."></TextBox>
                   </TableRow>
                   <TableRow>
-                        <Label>Set file extensions to corrupt</Label>
+                        <Label>Set file extensions to scramble</Label>
                     </TableRow>
                     <TableRow>
                         <TextArea x:Name="FolderScrambleTypesTxt" Text=".png, .txt, .jpg" ></TextArea>
