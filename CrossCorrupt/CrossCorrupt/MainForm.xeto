@@ -15,7 +15,7 @@
           <!-- Page 1 Main Table -->
           <TableLayout>
           <TableRow>
-          <GroupBox Text="Choose what to corrpt">
+          <GroupBox Text="Choose what to corrupt">
           <TableLayout x:Name="Page1Grid" >
             <TableRow>    
                 <RadioButtonList x:Name="SelectTypeList" SelectedValueChanged="corruptTypeClicked">
@@ -169,6 +169,18 @@
                 </TableLayout>
               </GroupBox>
             </TableRow>
+            <!--
+            <TableRow>
+                <GroupBox Text="Presets">
+                    <TableLayout><TableRow>
+                        <Button Text="Save Preset" />
+                        <Button Text="Load Preset"/>
+                        <Label />
+                    </TableRow>                
+                    </TableLayout>
+                </GroupBox>
+            </TableRow>
+            -->
           </TableLayout>
         </TabPage>
       </TabControl>
