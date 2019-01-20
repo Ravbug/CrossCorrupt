@@ -160,7 +160,7 @@ namespace CrossCorrupt
                 else
                 {
                     Console.Log("UI: The form is invalid", Console.LogTypes.Warning);
-                    MessageBox.Show("Please enter an input file.", "CrossCorrupt");
+                    MessageBox.Show("Please enter an input and output file path.", "CrossCorrupt");
                 }
             }
             catch (Exception ex)

@@ -8,7 +8,7 @@
     Resizable="false"
 	>
   <TableLayout x:Name="MasterTable">
-    <TableRow>
+    <TableRow ScaleHeight="True">
       <TabControl>
         <!-- Page 1 of the tabs -->
         <TabPage x:Name="Page1" Text="Files and Folders">
@@ -175,8 +175,8 @@
     </TableRow>
     <TableRow>
       <!-- The Run Corrput button and progress bar layout -->
-        <TableRow>
-          <Button  x:Name="RunCorruptBtn" Text="Run Corrupt" Click="RunCorrupt" />
+        <TableRow ScaleHeight="false">
+          <Button x:Name="RunCorruptBtn" Text="Run Corrupt" Click="RunCorrupt" />
           <ProgressBar x:Name="MainProg" MinValue="0" MaxValue="100"/>
         </TableRow>
     </TableRow>
