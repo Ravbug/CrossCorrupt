@@ -197,7 +197,7 @@
 	<Form.Menu>
 		<MenuBar>
 			<MenuBar.ApplicationItems>
-				<ButtonMenuItem Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />
+				<ButtonMenuItem Enabled="False" Text="Preferences.." Shortcut="{On Control+O, Mac=Application+Comma}" />
 			</MenuBar.ApplicationItems>
 			<MenuBar.QuitItem>
 				<ButtonMenuItem Text="Quit" Shortcut="CommonModifier+Q" Click="HandleQuit" />
