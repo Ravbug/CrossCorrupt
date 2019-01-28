@@ -260,7 +260,7 @@ namespace CrossCorrupt
 
                 //build filetypes hashset
                 HashSet<string> fileTypes = new HashSet<string>(FolderScrambleTypesTxt.Text.Split(','));
-                Console.Log("UI: FileTypes = " + FolderScrambleTypesTxt.Text + "; scrambling " + ((bool)EnableSubfolderScramble.Checked ? "these types only" : "all except these types"), Console.LogTypes.Info);
+                Console.Log("UI: FileTypes = " + FolderScrambleTypesTxt.Text + "; scrambling " + (!(bool)EnableSubfolderScramble.Checked ? "these types only" : "all except these types"), Console.LogTypes.Info);
 
                 FolderScrambler fs = new FolderScrambler(newPath, (bool)FolderScrambleInvertChk.Checked, fileTypes, (bool)EnableSubfolderScramble.Checked);
                 fs.ScrambleNames((double prog) =>
