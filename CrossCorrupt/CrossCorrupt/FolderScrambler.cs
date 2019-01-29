@@ -45,7 +45,7 @@ namespace CrossCorrupt
                 this.extensions = extensions;
                 foreach (string s in this.extensions)
                 {
-                    s.Replace(" ", "");
+                    s = s.Replace(" ", "");
                 }
                 this.allExcept = allExcept;
                 if (folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
