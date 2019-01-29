@@ -276,7 +276,7 @@ namespace CrossCorrupt
                             RunCorruptBtn.Text = "Run Corrupt";
                             running = false;
                             Console.Log("UI: Folder Scramble completed!", Console.LogTypes.Info);
-                            MessageBox.Show("Corruption complete!", "CrossCorrupt");
+                            MessageBox.Show("FolderScramble complete!", "CrossCorrupt");
                         }
                     });
                 });
