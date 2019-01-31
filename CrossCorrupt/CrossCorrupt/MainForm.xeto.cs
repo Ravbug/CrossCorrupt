@@ -83,7 +83,32 @@ namespace CrossCorrupt
                     Console.Log("UI: User aborted corruption", Console.LogTypes.Error);
 
                 }
-                //otherwise setup and run
+                //make sure if folder corrupt is happening in the same directory it gets a new name
+                else if (SelectTypeList.SelectedIndex == 1 
+                    && CustomNameText.Text.Trim().Equals(String.Empty) 
+                    && InfileTxt.Text.Trim().Substring(0, InfileTxt.Text.LastIndexOf(Path.DirectorySeparatorChar)).Equals(OutfileTxt.Text.Trim()))
+                {
+                    Label lb = new Label();
+                    lb.Text = "Cannot corrupt to the same directory. Please enter a new name for your output folder here and run again.";
+                    TextBox tx = new TextBox
+                    {
+                        PlaceholderText = "New folder name"
+                    };
+                    tx.TextChanged += DialogUpdateNewNameText;
+                    DynamicLayout tbl = new DynamicLayout();
+                    tbl.AddCentered(lb);
+                    tbl.AddCentered(tx);
+                    Button btn = new Button();
+                    btn.Text = "Run";
+                    btn.Click += RunAgainDialogButton;
+                    tbl.Add(btn);
+                    Dialog dl = new Dialog
+                    {
+                        Content = tbl
+                    };
+                    dl.ShowModal();
+                }
+                //otherwise run normally
                 else if (InfileTxt.Text.Trim().Length > 0 && OutfileTxt.Text.Trim().Length > 0)
                 {
                     Console.Log("UI: Initializing corruption backend", Console.LogTypes.Info);
@@ -453,6 +478,27 @@ namespace CrossCorrupt
         protected void CopyLogClicked(object sender, EventArgs e)
         {
             clipboard.Text = ConsoleLog.Text;
+        }
+
+        /// <summary>
+        /// Runs the RunCorrupt method again and closes the object's parent dialog box.
+        /// </summary>
+        /// <param name="sender">The child of a dialog box.</param>
+        /// <param name="e">E.</param>
+        protected void RunAgainDialogButton(object sender, EventArgs e)
+        {
+           ((Dialog)((Button)sender).FindParent<Dialog>()).Close();
+            RunCorrupt(sender, e);
+        }
+
+        /// <summary>
+        /// Changes the custom name text from another textbox.
+        /// </summary>
+        /// <param name="sender">The textbox to copy the text from</param>
+        /// <param name="e">E.</param>
+        protected void DialogUpdateNewNameText(object sender, EventArgs e)
+        {
+            CustomNameText.Text = ((TextBox)sender).Text;
         }
 
 
