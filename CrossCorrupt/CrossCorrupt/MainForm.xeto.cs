@@ -31,6 +31,7 @@ namespace CrossCorrupt
         private CheckBox FolderScrambleInvertChk;
         private TextArea FolderScrambleTypesTxt;
         private Label FolderScrambleSettingsReminder;
+        private CheckBox AddSuffixCheckbox;
 
         private CheckBox AutoChangeCorruptEveryChck;
         private CheckBox AutoChangeStartChck;
@@ -83,10 +84,16 @@ namespace CrossCorrupt
                     Console.Log("UI: User aborted corruption", Console.LogTypes.Error);
 
                 }
+                //make sure file corrupt isn't corrupting to the same location without adding the suffix
+                else if (SelectTypeList.SelectedIndex == 0 &&!AddSuffixCheckbox.Checked.Value 
+                    && TestSameDirectory(InfileTxt.Text, OutfileTxt.Text))
+                {
+                    MessageBox.Show("Cannot corrupt to the same directory unless the \"Add \'Corrupted\' suffix\" box is checked ");
+                }
                 //make sure if folder corrupt is happening in the same directory it gets a new name
                 else if (SelectTypeList.SelectedIndex == 1 
                     && CustomNameText.Text.Trim().Equals(String.Empty) 
-                    && InfileTxt.Text.Trim().Substring(0, InfileTxt.Text.LastIndexOf(Path.DirectorySeparatorChar)).Equals(OutfileTxt.Text.Trim()))
+                    && TestSameDirectory(InfileTxt.Text, OutfileTxt.Text))
                 {
                     Label lb = new Label();
                     lb.Text = "Cannot corrupt to the same directory. Please enter a new name for your output folder here and run again.";
@@ -430,6 +437,7 @@ namespace CrossCorrupt
                 }
                 CustomNameText.Visible = true;
                 CustomNameL.Visible = true;
+                AddSuffixCheckbox.Visible = false;
             }
             else
             {
@@ -439,7 +447,7 @@ namespace CrossCorrupt
                 EnableFolderScrambleChck.Checked = false;
                 CustomNameText.Visible = false;
                 CustomNameL.Visible = false;
-
+                AddSuffixCheckbox.Visible = true;
             }
             //prevent crashing due to user changing mode without changing files
             InfileTxt.Text = "";
@@ -501,6 +509,17 @@ namespace CrossCorrupt
             CustomNameText.Text = ((TextBox)sender).Text;
         }
 
+        /// <summary>
+        /// Tests if the input directory for a file/folder is in the same directory as testDirectory.
+        /// </summary>
+        /// <param name="inputLocation">The path of the file/folder to test.</param>
+        /// <param name="testDirectory">The path to check against.</param>
+        /// <returns>True if the path of the file/folder excluding the file/folder's name is the same as
+        /// the test directory.</returns>
+        private bool TestSameDirectory(string inputLocation, string testDirectory)
+        {
+            return inputLocation.Trim().Substring(0, inputLocation.LastIndexOf(Path.DirectorySeparatorChar)).Equals(testDirectory.Trim());
+        }
 
 
         //but keep these

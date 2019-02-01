@@ -37,6 +37,11 @@
                </TableRow>
                </TableLayout>                
             </TableRow>
+            <TableRow>
+              <CheckBox x:Name="AddSuffixCheckbox" Checked="True" Text="Add &quot;Corrupted&quot; suffix" 
+                        ToolTip="Adds &quot;corrupted&quot; to the end of the names of the new files. 
+                        For example, corrupting a file called &quot;test.png&quot; will become &quot;test-corrupted.png&quot;"/>
+            </TableRow>
           </TableLayout>
            </GroupBox>
            </TableRow>
